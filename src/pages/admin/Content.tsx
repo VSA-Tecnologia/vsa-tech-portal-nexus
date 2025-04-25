@@ -9,6 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ContentTabs } from '@/components/admin/content/ContentTabs';
 import { SectionEditor } from '@/components/admin/content/SectionEditor';
 import { SectionViewer } from '@/components/admin/content/SectionViewer';
+import { PageEditor } from '@/components/admin/content/PageEditor';
+import { PageCategoriesManager } from '@/components/admin/content/PageCategoriesManager';
+import { mockPages, mockPageCategories, Page, PageCategory } from '@/types/page';
 
 interface SectionContent {
   title: string;
@@ -57,20 +60,30 @@ const Content: React.FC = () => {
     }
   });
   
+  // Seções
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [tempContent, setTempContent] = useState<SectionContent | null>(null);
   
-  const handleEdit = (section: string) => {
+  // Páginas
+  const [pages, setPages] = useState<Page[]>(mockPages);
+  const [categories, setCategories] = useState<PageCategory[]>(mockPageCategories);
+  const [editingPage, setEditingPage] = useState<Page | null>(null);
+  const [isCreatingPage, setIsCreatingPage] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [isListView, setIsListView] = useState(false);
+  
+  // Seções handlers
+  const handleEditSection = (section: string) => {
     setEditingSection(section);
     setTempContent({...siteContent[section]});
   };
   
-  const handleCancel = () => {
+  const handleCancelSection = () => {
     setEditingSection(null);
     setTempContent(null);
   };
   
-  const handleChange = (
+  const handleChangeSection = (
     section: string,
     field: keyof SectionContent,
     value: string | boolean
@@ -83,7 +96,7 @@ const Content: React.FC = () => {
     });
   };
   
-  const handleSave = (section: string) => {
+  const handleSaveSection = (section: string) => {
     if (!tempContent) return;
     
     setSiteContent({
@@ -116,6 +129,81 @@ const Content: React.FC = () => {
     toast.success(`Seção ${section} ${newState ? 'ativada' : 'desativada'}.`);
   };
   
+  // Páginas handlers
+  const handleNewPage = () => {
+    setIsCreatingPage(true);
+    setEditingPage(null);
+  };
+  
+  const handleEditPage = (pageId: number) => {
+    const page = pages.find(p => p.id === pageId);
+    if (page) {
+      setEditingPage({...page});
+      setIsCreatingPage(false);
+    }
+  };
+  
+  const handleSavePage = (page: Page) => {
+    if (isCreatingPage) {
+      const newId = Math.max(...pages.map(p => p.id), 0) + 1;
+      const newPage = {
+        ...page,
+        id: newId
+      };
+      setPages([...pages, newPage]);
+      toast.success('Página criada com sucesso!');
+    } else {
+      setPages(pages.map(p => p.id === page.id ? page : p));
+      toast.success('Página atualizada com sucesso!');
+    }
+    
+    setEditingPage(null);
+    setIsCreatingPage(false);
+  };
+  
+  const handleCancelPage = () => {
+    setEditingPage(null);
+    setIsCreatingPage(false);
+  };
+  
+  const handleTogglePageFeatured = (pageId: number, featured: boolean) => {
+    setPages(pages.map(p => p.id === pageId ? {...p, featured} : p));
+    toast.success(`Página ${featured ? 'destacada' : 'removida dos destaques'} com sucesso!`);
+  };
+  
+  const handleManageCategories = () => {
+    setShowCategoryManager(true);
+  };
+  
+  const handleSaveCategories = (updatedCategories: PageCategory[]) => {
+    setCategories(updatedCategories);
+    setShowCategoryManager(false);
+  };
+  
+  // Se estiver editando uma página ou criando uma nova
+  if (editingPage || isCreatingPage) {
+    return (
+      <PageEditor 
+        page={editingPage}
+        categories={categories}
+        onSave={handleSavePage}
+        onCancel={handleCancelPage}
+        isNew={isCreatingPage}
+      />
+    );
+  }
+  
+  // Se estiver gerenciando categorias
+  if (showCategoryManager) {
+    return (
+      <PageCategoriesManager 
+        categories={categories}
+        onSave={handleSaveCategories}
+        onBack={() => setShowCategoryManager(false)}
+      />
+    );
+  }
+  
   return (
     <div className="space-y-6">
       <div>
@@ -125,7 +213,16 @@ const Content: React.FC = () => {
         </p>
       </div>
       
-      <ContentTabs>
+      <ContentTabs 
+        pages={pages}
+        categories={categories}
+        onNewPage={handleNewPage}
+        onEditPage={handleEditPage}
+        onTogglePageFeatured={handleTogglePageFeatured}
+        onManageCategories={handleManageCategories}
+        isListView={isListView}
+        toggleView={() => setIsListView(!isListView)}
+      >
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium">Seções do Site</h2>
@@ -154,16 +251,16 @@ const Content: React.FC = () => {
                       <SectionEditor
                         section={section}
                         content={tempContent!}
-                        onCancel={handleCancel}
-                        onChange={handleChange}
-                        onSave={handleSave}
+                        onCancel={handleCancelSection}
+                        onChange={handleChangeSection}
+                        onSave={handleSaveSection}
                       />
                     ) : (
                       <SectionViewer
                         section={section}
                         content={siteContent[section]}
                         isEditor={isEditor}
-                        onEdit={handleEdit}
+                        onEdit={handleEditSection}
                         onToggleEnabled={toggleSectionEnabled}
                       />
                     )}
