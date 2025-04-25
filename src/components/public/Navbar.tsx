@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link as ScrollLink } from 'react-scroll';
@@ -41,9 +40,11 @@ const Navbar: React.FC = () => {
     >
       <nav className="container mx-auto flex items-center justify-between py-4">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-vsa-blue dark:text-white">
-            VSA<span className="text-vsa-teal">Tech</span>
-          </span>
+          <img 
+            src="/lovable-uploads/63a9548e-8cf5-4a44-97b9-90dda37e911f.png" 
+            alt="VSA Tech Logo" 
+            className="h-10 w-auto mr-2" 
+          />
         </Link>
 
         {/* Desktop Menu */}
