@@ -12,6 +12,7 @@ import { SectionViewer } from '@/components/admin/content/SectionViewer';
 import { PageEditor } from '@/components/admin/content/PageEditor';
 import { PageCategoriesManager } from '@/components/admin/content/PageCategoriesManager';
 import { mockPages, mockPageCategories, Page, PageCategory } from '@/types/page';
+import PortfolioManager from '@/components/admin/content/PortfolioManager';
 
 interface SectionContent {
   title: string;
@@ -180,6 +181,15 @@ const Content: React.FC = () => {
     setShowCategoryManager(false);
   };
   
+  // Portfolio handlers
+  const handleUpdatePortfolioContent = (updatedContent: SectionContent) => {
+    setSiteContent({
+      ...siteContent,
+      portfolio: updatedContent
+    });
+    toast.success('Configurações do portfólio atualizadas com sucesso!');
+  };
+  
   // Se estiver editando uma página ou criando uma nova
   if (editingPage || isCreatingPage) {
     return (
@@ -247,22 +257,53 @@ const Content: React.FC = () => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <Card>
-                    {editingSection === section ? (
-                      <SectionEditor
-                        section={section}
-                        content={tempContent!}
-                        onCancel={handleCancelSection}
-                        onChange={handleChangeSection}
-                        onSave={handleSaveSection}
-                      />
+                    {section === 'portfolio' ? (
+                      <div className="p-6">
+                        {editingSection === section ? (
+                          <SectionEditor
+                            section={section}
+                            content={tempContent!}
+                            onCancel={handleCancelSection}
+                            onChange={handleChangeSection}
+                            onSave={handleSaveSection}
+                          />
+                        ) : (
+                          <div className="space-y-6">
+                            <SectionViewer
+                              section={section}
+                              content={siteContent[section]}
+                              isEditor={isEditor}
+                              onEdit={handleEditSection}
+                              onToggleEnabled={toggleSectionEnabled}
+                            />
+                            
+                            <hr className="my-6" />
+                            
+                            <PortfolioManager 
+                              sectionContent={siteContent.portfolio}
+                              onUpdateSectionContent={handleUpdatePortfolioContent}
+                            />
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      <SectionViewer
-                        section={section}
-                        content={siteContent[section]}
-                        isEditor={isEditor}
-                        onEdit={handleEditSection}
-                        onToggleEnabled={toggleSectionEnabled}
-                      />
+                      editingSection === section ? (
+                        <SectionEditor
+                          section={section}
+                          content={tempContent!}
+                          onCancel={handleCancelSection}
+                          onChange={handleChangeSection}
+                          onSave={handleSaveSection}
+                        />
+                      ) : (
+                        <SectionViewer
+                          section={section}
+                          content={siteContent[section]}
+                          isEditor={isEditor}
+                          onEdit={handleEditSection}
+                          onToggleEnabled={toggleSectionEnabled}
+                        />
+                      )
                     )}
                   </Card>
                 </AccordionContent>
