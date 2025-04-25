@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Star, Calendar } from 'lucide-react';
+import { Star, Calendar, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

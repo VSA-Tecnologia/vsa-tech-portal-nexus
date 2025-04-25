@@ -11,7 +11,7 @@ import {
   CardTitle, 
   CardFooter 
 } from '@/components/ui/card';
-import { PageCard } from './PageCard';
+import { PageCard } from './page-card/PageCard';
 import { Page, PageCategory } from '@/types/page';
 
 interface ContentTabsProps {
