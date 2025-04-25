@@ -268,7 +268,7 @@ const Messages: React.FC = () => {
                       <TableCell className="hidden sm:table-cell">
                         <Badge variant={
                           message.status === 'pending' ? 'default' : 
-                          message.status === 'responded' ? 'success' : 'secondary'
+                          message.status === 'responded' ? 'secondary' : 'outline'
                         }>
                           {message.status === 'pending' ? 'Pendente' : 
                            message.status === 'responded' ? 'Respondido' : 'Arquivado'}

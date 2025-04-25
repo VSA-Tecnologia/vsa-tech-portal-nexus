@@ -181,7 +181,7 @@ const Users: React.FC = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.status === 'active' ? 'success' : 'destructive'}>
+                    <Badge variant={user.status === 'active' ? 'secondary' : 'destructive'}>
                       {user.status === 'active' ? 'Ativo' : 'Inativo'}
                     </Badge>
                   </TableCell>
