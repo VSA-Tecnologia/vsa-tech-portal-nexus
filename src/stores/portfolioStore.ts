@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface PortfolioItem {
   id: number;
@@ -130,7 +130,8 @@ export const usePortfolioStore = create<PortfolioStore>()(
     }),
     {
       name: 'portfolio-storage',
-      skipHydration: true,
+      storage: createJSONStorage(() => localStorage),
+      skipHydration: false,
     }
   )
 );

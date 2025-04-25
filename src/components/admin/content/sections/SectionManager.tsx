@@ -80,6 +80,7 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
   };
 
   const handleUpdatePortfolioContent = (updatedContent: SectionContent) => {
+    console.log("Updating portfolio section content:", updatedContent);
     setSiteContent({
       ...siteContent,
       portfolio: updatedContent

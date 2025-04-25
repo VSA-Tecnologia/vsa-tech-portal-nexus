@@ -25,13 +25,25 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   onUpdateSectionContent
 }) => {
   // Use the portfolio store
-  const { items: portfolioItems, addItem, updateItem, toggleItemEnabled } = usePortfolioStore();
+  const { items: portfolioItems, addItem, updateItem, toggleItemEnabled, setItems } = usePortfolioStore();
   const isHydrated = useHydratedPortfolioStore();
   
   const [currentItem, setCurrentItem] = useState<PortfolioItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState('all');
+  
+  // Ensure we update the section content whenever the portfolio items change
+  useEffect(() => {
+    if (isHydrated) {
+      // This ensures the section content is updated with the latest state from the store
+      onUpdateSectionContent({
+        ...sectionContent,
+        // Add a timestamp to force the parent component to recognize the change
+        lastUpdate: new Date().toISOString()
+      });
+    }
+  }, [portfolioItems, isHydrated]);
   
   const handleCreateNew = () => {
     const newItem: PortfolioItem = {
@@ -69,12 +81,24 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
       setIsEditorOpen(false);
       setCurrentItem(null);
       setIsLoading(false);
+      
+      // Force update of section content to parent
+      onUpdateSectionContent({
+        ...sectionContent,
+        lastUpdate: new Date().toISOString()
+      });
     }, 500);
   };
   
   const handleToggleEnabled = (id: number, enabled: boolean) => {
     toggleItemEnabled(id, enabled);
     toast.success(`Item ${enabled ? 'ativado' : 'desativado'} com sucesso!`);
+    
+    // Force update of section content to parent
+    onUpdateSectionContent({
+      ...sectionContent,
+      lastUpdate: new Date().toISOString()
+    });
   };
   
   // If the store is not hydrated yet, use the items from it once it is
