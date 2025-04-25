@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   ScrollText, 
@@ -8,7 +7,7 @@ import {
   Tag,
   Calendar,
   Eye,
-  Eye2 
+  EyeOff 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -116,7 +115,7 @@ export const PageCard: React.FC<PageCardProps> = ({
                     </>
                   ) : (
                     <>
-                      <Eye2 className="h-3 w-3 mr-1" />
+                      <EyeOff className="h-3 w-3 mr-1" />
                       <span>Rascunho</span>
                     </>
                   )}
