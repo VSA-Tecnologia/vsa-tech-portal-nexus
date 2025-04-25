@@ -25,13 +25,21 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   onUpdateSectionContent
 }) => {
   // Use the portfolio store
-  const { items: portfolioItems, addItem, updateItem, toggleItemEnabled, setItems } = usePortfolioStore();
+  const { items: portfolioItems, addItem, updateItem, toggleItemEnabled, setItems, forceUpdate } = usePortfolioStore();
   const isHydrated = useHydratedPortfolioStore();
   
   const [currentItem, setCurrentItem] = useState<PortfolioItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState('all');
+  
+  // Force update when component mounts to ensure sync between admin and public views
+  useEffect(() => {
+    if (isHydrated) {
+      console.log("PortfolioManager: Initial sync of portfolio data");
+      forceUpdate();
+    }
+  }, [isHydrated, forceUpdate]);
   
   // Ensure we update the section content whenever the portfolio items change
   useEffect(() => {
@@ -42,8 +50,10 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
         // Add a timestamp to force the parent component to recognize the change
         lastUpdate: new Date().toISOString()
       });
+      
+      console.log("PortfolioManager: Updated section content due to portfolio changes");
     }
-  }, [portfolioItems, isHydrated]);
+  }, [portfolioItems, isHydrated, sectionContent, onUpdateSectionContent]);
   
   const handleCreateNew = () => {
     const newItem: PortfolioItem = {
@@ -72,10 +82,12 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
         // Update existing item
         updateItem(item);
         toast.success('Item do portfólio atualizado com sucesso!');
+        console.log("Portfolio item updated:", item.id, item.title);
       } else {
         // Add new item
         addItem(item);
         toast.success('Item do portfólio criado com sucesso!');
+        console.log("New portfolio item created:", item.title);
       }
       
       setIsEditorOpen(false);
@@ -93,6 +105,7 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   const handleToggleEnabled = (id: number, enabled: boolean) => {
     toggleItemEnabled(id, enabled);
     toast.success(`Item ${enabled ? 'ativado' : 'desativado'} com sucesso!`);
+    console.log("Toggled item enabled state:", id, enabled);
     
     // Force update of section content to parent
     onUpdateSectionContent({

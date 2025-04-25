@@ -15,6 +15,7 @@ export interface PortfolioItem {
   completionDate?: string;
   url?: string;
   enabled: boolean;
+  lastUpdated?: string;
 }
 
 // Initial portfolio data
@@ -30,7 +31,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'TechCorp Solutions',
     completionDate: '2023-05-15',
     url: 'https://exemplo.com/portal',
-    enabled: true
+    enabled: true,
+    lastUpdated: new Date().toISOString()
   },
   {
     id: 2,
@@ -43,7 +45,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'Indústrias Metalúrgicas Brasil',
     completionDate: '2022-11-30',
     url: 'https://exemplo.com/erp-case',
-    enabled: true
+    enabled: true,
+    lastUpdated: new Date().toISOString()
   },
   {
     id: 3,
@@ -56,7 +59,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'Finantech Serviços',
     completionDate: '2023-02-20',
     url: 'https://exemplo.com/cloud-migration',
-    enabled: true
+    enabled: true,
+    lastUpdated: new Date().toISOString()
   },
   {
     id: 4,
@@ -69,7 +73,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'Distribuidora Nacional',
     completionDate: '2023-08-10',
     url: 'https://exemplo.com/app-b2b',
-    enabled: true
+    enabled: true,
+    lastUpdated: new Date().toISOString()
   },
   {
     id: 5,
@@ -82,7 +87,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'Varejo Fashion Store',
     completionDate: '2023-07-05',
     url: 'https://exemplo.com/ecommerce',
-    enabled: true
+    enabled: true,
+    lastUpdated: new Date().toISOString()
   },
   {
     id: 6,
@@ -95,7 +101,8 @@ const initialPortfolioItems: PortfolioItem[] = [
     client: 'Banco Regional',
     completionDate: '2023-04-18',
     url: 'https://exemplo.com/security-case',
-    enabled: false
+    enabled: false,
+    lastUpdated: new Date().toISOString()
   },
 ];
 
@@ -106,6 +113,7 @@ interface PortfolioStore {
   updateItem: (item: PortfolioItem) => void;
   toggleItemEnabled: (id: number, enabled: boolean) => void;
   getEnabledItems: () => PortfolioItem[];
+  forceUpdate: () => void;
 }
 
 // Create a store with persistence
@@ -113,25 +121,72 @@ export const usePortfolioStore = create<PortfolioStore>()(
   persist(
     (set, get) => ({
       items: initialPortfolioItems,
-      setItems: (items) => set({ items }),
+      
+      setItems: (items) => set(() => ({ 
+        items: items.map(item => ({
+          ...item,
+          lastUpdated: new Date().toISOString()
+        }))
+      })),
+      
       addItem: (item) => {
         const newId = Math.max(...get().items.map(i => i.id), 0) + 1;
         set((state) => ({ 
-          items: [...state.items, { ...item, id: newId }] 
+          items: [
+            ...state.items, 
+            { 
+              ...item, 
+              id: newId,
+              lastUpdated: new Date().toISOString()
+            }
+          ] 
         }));
+        console.log("Added new portfolio item with ID:", newId);
       },
-      updateItem: (item) => set((state) => ({
-        items: state.items.map(i => i.id === item.id ? item : i)
-      })),
-      toggleItemEnabled: (id, enabled) => set((state) => ({
-        items: state.items.map(i => i.id === id ? { ...i, enabled } : i)
-      })),
-      getEnabledItems: () => get().items.filter(item => item.enabled)
+      
+      updateItem: (item) => {
+        set((state) => ({
+          items: state.items.map(i => 
+            i.id === item.id 
+              ? { ...item, lastUpdated: new Date().toISOString() } 
+              : i
+          )
+        }));
+        console.log("Updated portfolio item with ID:", item.id);
+      },
+      
+      toggleItemEnabled: (id, enabled) => {
+        set((state) => ({
+          items: state.items.map(i => 
+            i.id === id 
+              ? { ...i, enabled, lastUpdated: new Date().toISOString() } 
+              : i
+          )
+        }));
+        console.log("Toggled portfolio item enabled state. ID:", id, "Enabled:", enabled);
+      },
+      
+      getEnabledItems: () => get().items.filter(item => item.enabled),
+      
+      forceUpdate: () => {
+        // Force a state update with the same items but updated timestamp
+        const currentItems = get().items;
+        set({ 
+          items: currentItems.map(item => ({
+            ...item,
+            lastUpdated: new Date().toISOString()
+          }))
+        });
+        console.log("Forced portfolio store update");
+      }
     }),
     {
       name: 'portfolio-storage',
       storage: createJSONStorage(() => localStorage),
       skipHydration: false,
+      partialize: (state) => ({ 
+        items: state.items 
+      }),
     }
   )
 );
@@ -143,14 +198,19 @@ export function useHydratedPortfolioStore() {
   useEffect(() => {
     // This forces a rerender once the store is hydrated
     const unsubscribe = usePortfolioStore.persist.onHydrate(() => {
+      console.log("Portfolio store hydration started");
       setHydrated(false);
     });
     
     const unsubscribeFinishHydration = usePortfolioStore.persist.onFinishHydration(() => {
+      console.log("Portfolio store hydration finished with", usePortfolioStore.getState().items.length, "items");
       setHydrated(true);
     });
     
-    setHydrated(usePortfolioStore.persist.hasHydrated());
+    // Check initial hydration state
+    const initialHydration = usePortfolioStore.persist.hasHydrated();
+    setHydrated(initialHydration);
+    console.log("Initial portfolio store hydration state:", initialHydration);
     
     return () => {
       unsubscribe();
