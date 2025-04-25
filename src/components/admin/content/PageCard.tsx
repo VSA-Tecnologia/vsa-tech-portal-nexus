@@ -1,12 +1,10 @@
-
 import React from 'react';
 import { ScrollText, Pencil, Star, StarOff, Calendar, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { Page, PageCategory } from '@/types/page';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale'; // Corrected import path
+import { ptBR } from 'date-fns/locale';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PageCardProps {
