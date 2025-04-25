@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Page, PageCategory } from '@/types/page';
 import { ContentTabs } from '../ContentTabs';
 import { PageEditor } from '../PageEditor';
 import { PageCategoriesManager } from '../PageCategoriesManager';
+import { toast } from '@/hooks/use-toast';
 
 interface PageManagerProps {
   pages: Page[];
@@ -43,13 +43,19 @@ export const PageManager: React.FC<PageManagerProps> = ({
         id: newId
       };
       pages.push(newPage);
-      toast.success('Página criada com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Página criada com sucesso!"
+      });
     } else {
       const index = pages.findIndex(p => p.id === page.id);
       if (index !== -1) {
         pages[index] = page;
       }
-      toast.success('Página atualizada com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Página atualizada com sucesso!"
+      });
     }
     setEditingPage(null);
     setIsCreatingPage(false);
@@ -65,7 +71,10 @@ export const PageManager: React.FC<PageManagerProps> = ({
     if (index !== -1) {
       pages[index].featured = featured;
     }
-    toast.success(`Página ${featured ? 'destacada' : 'removida dos destaques'} com sucesso!`);
+    toast({
+      title: "Sucesso",
+      description: `Página ${featured ? 'destacada' : 'removida dos destaques'} com sucesso!`
+    });
   };
 
   if (editingPage || isCreatingPage) {
@@ -103,6 +112,8 @@ export const PageManager: React.FC<PageManagerProps> = ({
       onManageCategories={() => setShowCategoryManager(true)}
       isListView={isListView}
       toggleView={() => setIsListView(!isListView)}
-    />
+    >
+      <></>
+    </ContentTabs>
   );
 };

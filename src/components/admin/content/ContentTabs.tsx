@@ -15,7 +15,7 @@ import { PageCard } from './PageCard';
 import { Page, PageCategory } from '@/types/page';
 
 interface ContentTabsProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   pages: Page[];
   categories: PageCategory[];
   onNewPage: () => void;
