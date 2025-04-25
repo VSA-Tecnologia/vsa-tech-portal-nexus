@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Eye, EyeOff, ExternalLink } from 'lucide-react';
-import { PortfolioItem } from './PortfolioItemEditor';
 import { cn } from '@/lib/utils';
+import { PortfolioItem } from '@/stores/portfolioStore';
 
 interface PortfolioItemViewerProps {
   item: PortfolioItem;

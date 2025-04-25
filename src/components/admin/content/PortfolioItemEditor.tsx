@@ -14,20 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-
-export interface PortfolioItem {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  detailedDescription?: string;
-  technologies?: string[];
-  client?: string;
-  completionDate?: string;
-  url?: string;
-  enabled: boolean;
-}
+import { PortfolioItem } from '@/stores/portfolioStore';
 
 interface PortfolioItemEditorProps {
   item: PortfolioItem;
