@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   ScrollText, 
@@ -20,7 +21,7 @@ import {
 import { Page, PageCategory } from '@/types/page';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR } from 'date-fns/locale/pt-BR';  // Updated import path
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PageCardProps {
