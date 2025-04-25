@@ -21,7 +21,7 @@ import {
 import { Page, PageCategory } from '@/types/page';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale/pt-BR';  // Updated import path
+import ptBR from 'date-fns/locale/pt-BR';  // Fixed import to use default import
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PageCardProps {
