@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Page, PageCategory } from '@/types/page';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR/index.js';  // Fixed import path
+import { ptBR } from 'date-fns/locale'; // Corrected import path
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PageCardProps {
