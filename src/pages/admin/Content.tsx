@@ -62,13 +62,6 @@ const Content: React.FC = () => {
       content: 'Projetos que demonstram nossa capacidade de entregar soluções completas e inovadoras.',
       image: '',
       enabled: true
-    },
-    testimonials: {
-      title: 'O que Nossos Clientes Dizem',
-      subtitle: 'A opinião de quem já transformou seu negócio com nossas soluções',
-      content: 'Avaliações e depoimentos de clientes satisfeitos com nossos serviços.',
-      image: '',
-      enabled: true
     }
   });
   

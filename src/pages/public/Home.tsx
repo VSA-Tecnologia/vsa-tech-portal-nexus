@@ -6,7 +6,6 @@ import HeroSection from '@/components/public/sections/HeroSection';
 import AboutSection from '@/components/public/sections/AboutSection';
 import ServicesSection from '@/components/public/sections/ServicesSection';
 import PortfolioSection from '@/components/public/sections/PortfolioSection';
-import TestimonialsSection from '@/components/public/sections/TestimonialsSection';
 import PlansSection from '@/components/public/sections/PlansSection';
 import BlogSection from '@/components/public/sections/BlogSection';
 import ContactSection from '@/components/public/sections/ContactSection';
@@ -37,7 +36,6 @@ const Home: React.FC = () => {
         <AboutSection />
         <ServicesSection />
         <PortfolioSection />
-        <TestimonialsSection />
         <PlansSection />
         <BlogSection />
         <ContactSection />

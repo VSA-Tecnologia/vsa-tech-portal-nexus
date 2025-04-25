@@ -26,7 +26,6 @@ const Navbar: React.FC = () => {
     { name: 'Sobre', to: 'about' },
     { name: 'Serviços', to: 'services' },
     { name: 'Portfólio', to: 'portfolio' },
-    { name: 'Depoimentos', to: 'testimonials' },
     { name: 'Planos', to: 'plans' },
     { name: 'Blog', to: 'blog' },
     { name: 'Contato', to: 'contact' },
