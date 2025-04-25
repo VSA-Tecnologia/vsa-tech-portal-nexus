@@ -9,6 +9,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 // Public pages
 import Home from "./pages/public/Home";
 import NotFound from "./pages/NotFound";
+import ServicesList from "./pages/public/ServicesList";
+import ServiceDetail from "./pages/public/ServiceDetail";
 
 // Admin pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -18,6 +20,7 @@ import Register from "./pages/admin/auth/Register";
 import ForgotPassword from "./pages/admin/auth/ForgotPassword";
 import Users from "./pages/admin/Users";
 import Content from "./pages/admin/Content";
+import Services from "./pages/admin/services/Services";
 import Messages from "./pages/admin/Messages";
 import Settings from "./pages/admin/Settings";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
@@ -34,6 +37,8 @@ const App = () => (
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/servicos" element={<ServicesList />} />
+            <Route path="/servicos/:slug" element={<ServiceDetail />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<Login />} />
@@ -48,6 +53,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="users" element={<Users />} />
               <Route path="content" element={<Content />} />
+              <Route path="services" element={<Services />} />
               <Route path="messages" element={<Messages />} />
               <Route path="settings" element={<Settings />} />
             </Route>

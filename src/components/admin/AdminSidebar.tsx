@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  LayoutDashboard, Users, FileText, Mail, Settings, X
+  LayoutDashboard, Users, FileText, Mail, Settings, X, Package
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '../ui/badge';
@@ -20,6 +20,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, onClose }) => {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Usuários', href: '/admin/users', icon: Users, requiredRole: 'admin' as const },
     { name: 'Conteúdo', href: '/admin/content', icon: FileText },
+    { name: 'Serviços', href: '/admin/services', icon: Package },
     { name: 'Mensagens', href: '/admin/messages', icon: Mail, badge: '4' },
     { name: 'Configurações', href: '/admin/settings', icon: Settings, requiredRole: 'admin' as const },
   ];
