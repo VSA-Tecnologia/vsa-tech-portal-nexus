@@ -1,22 +1,14 @@
 
 import React, { useState } from 'react';
-import { 
-  ScrollText, Layers, PlusCircle, Image, Pencil, Save, Undo
-} from 'lucide-react';
-import { 
-  Tabs, TabsContent, TabsList, TabsTrigger 
-} from '@/components/ui/tabs';
-import {
-  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
-} from '@/components/ui/card';
-import {
-  Accordion, AccordionContent, AccordionItem, AccordionTrigger
-} from '@/components/ui/accordion';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { PlusCircle } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { ContentTabs } from '@/components/admin/content/ContentTabs';
+import { SectionEditor } from '@/components/admin/content/SectionEditor';
+import { SectionViewer } from '@/components/admin/content/SectionViewer';
 
 interface SectionContent {
   title: string;
@@ -133,179 +125,55 @@ const Content: React.FC = () => {
         </p>
       </div>
       
-      <Tabs defaultValue="sections">
-        <TabsList>
-          <TabsTrigger value="sections">
-            <Layers className="h-4 w-4 mr-2" />
-            Seções
-          </TabsTrigger>
-          <TabsTrigger value="pages">
-            <ScrollText className="h-4 w-4 mr-2" />
-            Páginas
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="sections" className="mt-6">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium">Seções do Site</h2>
-              <Button variant="outline" className="text-vsa-teal border-vsa-teal">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Nova Seção
-              </Button>
-            </div>
-            
-            <Accordion type="single" collapsible className="w-full">
-              {Object.keys(siteContent).map((section) => (
-                <AccordionItem key={section} value={section}>
-                  <AccordionTrigger className="hover:bg-gray-50 px-4 rounded-lg">
-                    <div className="flex items-center">
-                      <span className="capitalize">{section}</span>
-                      {!siteContent[section].enabled && (
-                        <span className="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
-                          Inativo
-                        </span>
-                      )}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <Card>
-                      {editingSection === section ? (
-                        <CardContent className="p-6">
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Título</label>
-                              <Input
-                                value={tempContent?.title || ''}
-                                onChange={(e) => handleChange(section, 'title', e.target.value)}
-                              />
-                            </div>
-                            
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Subtítulo</label>
-                              <Input
-                                value={tempContent?.subtitle || ''}
-                                onChange={(e) => handleChange(section, 'subtitle', e.target.value)}
-                              />
-                            </div>
-                            
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Conteúdo</label>
-                              <Textarea
-                                rows={4}
-                                value={tempContent?.content || ''}
-                                onChange={(e) => handleChange(section, 'content', e.target.value)}
-                              />
-                            </div>
-                            
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">URL da Imagem</label>
-                              <Input
-                                value={tempContent?.image || ''}
-                                onChange={(e) => handleChange(section, 'image', e.target.value)}
-                              />
-                              <p className="text-xs text-gray-500 mt-1">
-                                Insira a URL da imagem ou deixe em branco se não houver imagem.
-                              </p>
-                            </div>
-                            
-                            <div className="flex justify-end space-x-2 pt-2">
-                              <Button variant="outline" onClick={handleCancel}>
-                                <Undo className="h-4 w-4 mr-2" />
-                                Cancelar
-                              </Button>
-                              <Button className="bg-vsa-teal hover:bg-vsa-teal-dark" onClick={() => handleSave(section)}>
-                                <Save className="h-4 w-4 mr-2" />
-                                Salvar
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      ) : (
-                        <>
-                          <CardHeader>
-                            <CardTitle>{siteContent[section].title}</CardTitle>
-                            <CardDescription>{siteContent[section].subtitle}</CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="mb-4">{siteContent[section].content}</p>
-                            {siteContent[section].image && (
-                              <div className="relative h-40 rounded-md overflow-hidden">
-                                <img 
-                                  src={siteContent[section].image} 
-                                  alt={siteContent[section].title}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                          </CardContent>
-                          <CardFooter className="flex justify-between">
-                            <Button
-                              variant={siteContent[section].enabled ? "outline" : "default"}
-                              className={
-                                siteContent[section].enabled 
-                                  ? "border-red-500 text-red-500 hover:bg-red-50" 
-                                  : "bg-green-600 hover:bg-green-700"
-                              }
-                              onClick={() => toggleSectionEnabled(section)}
-                              disabled={!isEditor}
-                            >
-                              {siteContent[section].enabled ? "Desativar Seção" : "Ativar Seção"}
-                            </Button>
-                            <Button 
-                              onClick={() => handleEdit(section)}
-                              disabled={!isEditor}
-                            >
-                              <Pencil className="h-4 w-4 mr-2" />
-                              Editar
-                            </Button>
-                          </CardFooter>
-                        </>
-                      )}
-                    </Card>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+      <ContentTabs>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-medium">Seções do Site</h2>
+            <Button variant="outline" className="text-vsa-teal border-vsa-teal">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Nova Seção
+            </Button>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="pages">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium">Páginas do Site</h2>
-              <Button variant="outline" className="text-vsa-teal border-vsa-teal">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Nova Página
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {['Blog', 'Sobre', 'Contato', 'Serviços', 'Termos de Uso', 'Política de Privacidade'].map((page) => (
-                <Card key={page} className="overflow-hidden">
-                  <div className="h-40 bg-gray-100 flex items-center justify-center border-b">
-                    <ScrollText className="h-12 w-12 text-gray-400" />
+          
+          <Accordion type="single" collapsible className="w-full">
+            {Object.keys(siteContent).map((section) => (
+              <AccordionItem key={section} value={section}>
+                <AccordionTrigger className="hover:bg-gray-50 px-4 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="capitalize">{section}</span>
+                    {!siteContent[section].enabled && (
+                      <span className="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+                        Inativo
+                      </span>
+                    )}
                   </div>
-                  <CardHeader className="py-4">
-                    <CardTitle className="text-lg">{page}</CardTitle>
-                  </CardHeader>
-                  <CardFooter className="pt-0">
-                    <Button variant="ghost" className="text-vsa-teal hover:text-vsa-teal-dark hover:bg-vsa-teal/10">
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Editar
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-              
-              <Card className="overflow-hidden border-dashed border-2 flex flex-col items-center justify-center h-[248px]">
-                <PlusCircle className="h-12 w-12 text-gray-400 mb-2" />
-                <p className="text-gray-500 font-medium">Nova Página</p>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Card>
+                    {editingSection === section ? (
+                      <SectionEditor
+                        section={section}
+                        content={tempContent!}
+                        onCancel={handleCancel}
+                        onChange={handleChange}
+                        onSave={handleSave}
+                      />
+                    ) : (
+                      <SectionViewer
+                        section={section}
+                        content={siteContent[section]}
+                        isEditor={isEditor}
+                        onEdit={handleEdit}
+                        onToggleEnabled={toggleSectionEnabled}
+                      />
+                    )}
+                  </Card>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </ContentTabs>
     </div>
   );
 };
