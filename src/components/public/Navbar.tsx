@@ -38,17 +38,17 @@ const Navbar: React.FC = () => {
           : 'bg-transparent'
       }`}
     >
-      <nav className="container mx-auto flex items-center justify-between py-4">
+      <nav className="container mx-auto flex items-center justify-between py-6">
         <Link to="/" className="flex items-center">
           <img 
             src="/lovable-uploads/63a9548e-8cf5-4a44-97b9-90dda37e911f.png" 
             alt="VSA Tech Logo" 
-            className="h-10 w-auto mr-2" 
+            className="h-14 w-auto mr-3" 
           />
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center space-x-8">
+        <div className="hidden lg:flex items-center space-x-10">
           {navLinks.map((link) => (
             <ScrollLink
               key={link.to}
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
               smooth={true}
               offset={-80}
               duration={500}
-              className={`cursor-pointer font-medium hover:text-vsa-teal transition-colors ${
+              className={`cursor-pointer text-lg font-medium hover:text-vsa-teal transition-colors ${
                 scrolled ? 'text-vsa-blue dark:text-white' : 'text-vsa-blue dark:text-white'
               }`}
             >
@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
           
           <Link 
             to="/admin/login"
-            className="btn-primary"
+            className="btn-primary text-lg"
           >
             Área do Cliente
           </Link>
@@ -80,17 +80,17 @@ const Navbar: React.FC = () => {
           aria-label={isOpen ? "Close menu" : "Open menu"}
         >
           {isOpen ? (
-            <X className="h-6 w-6 text-vsa-blue dark:text-white" />
+            <X className="h-8 w-8 text-vsa-blue dark:text-white" />
           ) : (
-            <Menu className="h-6 w-6 text-vsa-blue dark:text-white" />
+            <Menu className="h-8 w-8 text-vsa-blue dark:text-white" />
           )}
         </button>
       </nav>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-vsa-blue p-4 shadow-lg">
-          <div className="flex flex-col space-y-4">
+        <div className="lg:hidden bg-white dark:bg-vsa-blue p-6 shadow-lg">
+          <div className="flex flex-col space-y-6">
             {navLinks.map((link) => (
               <ScrollLink
                 key={link.to}
@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
                 smooth={true}
                 offset={-80}
                 duration={500}
-                className="text-vsa-blue dark:text-white font-medium hover:text-vsa-teal transition-colors"
+                className="text-lg text-vsa-blue dark:text-white font-medium hover:text-vsa-teal transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
             ))}
             <Link 
               to="/admin/login"
-              className="btn-primary inline-block text-center"
+              className="btn-primary text-lg text-center"
               onClick={() => setIsOpen(false)}
             >
               Área do Cliente
