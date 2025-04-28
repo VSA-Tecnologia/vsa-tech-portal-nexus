@@ -78,7 +78,7 @@ const PlansList: React.FC<PlansListProps> = ({
                 </TableCell>
                 <TableCell>{plan.price}</TableCell>
                 <TableCell>
-                  <Badge variant={plan.status === 'published' ? 'success' : 'default'}>
+                  <Badge variant={plan.status === 'published' ? 'secondary' : 'default'} className={plan.status === 'published' ? 'bg-green-500 hover:bg-green-600' : ''}>
                     {plan.status === 'published' ? 'Publicado' : 'Rascunho'}
                   </Badge>
                 </TableCell>

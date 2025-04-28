@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { Check } from 'lucide-react'; 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import PlansList from '@/components/admin/plans/PlansList';
 import PlanEditor from '@/components/admin/plans/PlanEditor';
