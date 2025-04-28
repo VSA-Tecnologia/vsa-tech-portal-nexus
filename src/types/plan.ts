@@ -15,7 +15,7 @@ export interface Plan {
   buttonText: string;
   order: number;
   status: 'draft' | 'published';
-  serviceType: 'cloud' | 'server' | 'database' | 'wifi' | 'hard-drive' | 'backup' | 'hotspot';
+  serviceType: 'cloud' | 'server' | 'database' | 'wifi' | 'hard-drive' | 'archive' | 'signal';
   createdAt: Date;
   updatedAt: Date;
 }

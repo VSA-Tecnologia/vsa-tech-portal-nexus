@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, Cloud, Server, Database, Wifi, HardDrive, Backup, Hotspot } from 'lucide-react';
+import { Check, Cloud, Server, Database, Wifi, HardDrive, Archive, Signal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,8 +18,8 @@ const serviceTypeIcons: Record<string, React.ReactNode> = {
   database: <Database className="h-6 w-6 text-green-500" />,
   wifi: <Wifi className="h-6 w-6 text-indigo-500" />,
   'hard-drive': <HardDrive className="h-6 w-6 text-yellow-500" />,
-  backup: <Backup className="h-6 w-6 text-teal-500" />,
-  hotspot: <Hotspot className="h-6 w-6 text-orange-500" />,
+  archive: <Archive className="h-6 w-6 text-teal-500" />,
+  signal: <Signal className="h-6 w-6 text-orange-500" />,
 };
 
 const serviceTypeBackgrounds: Record<string, string> = {
@@ -28,8 +28,8 @@ const serviceTypeBackgrounds: Record<string, string> = {
   database: 'bg-green-50',
   wifi: 'bg-indigo-50',
   'hard-drive': 'bg-yellow-50',
-  backup: 'bg-teal-50',
-  hotspot: 'bg-orange-50',
+  archive: 'bg-teal-50',
+  signal: 'bg-orange-50',
 };
 
 const PlansSection: React.FC = () => {

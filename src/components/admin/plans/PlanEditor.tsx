@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Check, Plus, Trash2, X, Cloud, Server, Database, Wifi, HardDrive, Backup, Hotspot } from 'lucide-react';
+import { Check, Plus, Trash2, X, Cloud, Server, Database, Wifi, HardDrive, Archive, Signal } from 'lucide-react';
 import { 
   Form, 
   FormControl, 
@@ -36,12 +35,11 @@ const serviceTypeIcons = {
   database: <Database className="h-4 w-4 mr-2" />,
   wifi: <Wifi className="h-4 w-4 mr-2" />,
   'hard-drive': <HardDrive className="h-4 w-4 mr-2" />,
-  backup: <Backup className="h-4 w-4 mr-2" />,
-  hotspot: <Hotspot className="h-4 w-4 mr-2" />,
+  archive: <Archive className="h-4 w-4 mr-2" />,
+  signal: <Signal className="h-4 w-4 mr-2" />,
 };
 
 const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
-  // Generate a unique ID for new plans
   const generateId = () => Math.max(0, ...[plan?.id ?? 0]) + 1;
   const generateFeatureId = (features: PlanFeature[]) => 
     features.length > 0 ? Math.max(...features.map(f => f.id)) + 1 : 1;
@@ -96,7 +94,7 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
       popular: data.popular,
       status: data.status,
       serviceType: data.serviceType,
-      order: plan?.order || 999, // Will be reordered when saved
+      order: plan?.order || 999,
       createdAt: plan?.createdAt || new Date(),
       updatedAt: new Date(),
     };
@@ -183,14 +181,14 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
                         <HardDrive className="h-4 w-4 mr-2" /> Armazenamento
                       </div>
                     </SelectItem>
-                    <SelectItem value="backup">
+                    <SelectItem value="archive">
                       <div className="flex items-center">
-                        <Backup className="h-4 w-4 mr-2" /> Backup
+                        <Archive className="h-4 w-4 mr-2" /> Backup
                       </div>
                     </SelectItem>
-                    <SelectItem value="hotspot">
+                    <SelectItem value="signal">
                       <div className="flex items-center">
-                        <Hotspot className="h-4 w-4 mr-2" /> Hotspot
+                        <Signal className="h-4 w-4 mr-2" /> Hotspot
                       </div>
                     </SelectItem>
                   </SelectContent>

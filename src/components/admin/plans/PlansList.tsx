@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { CreditCard, Plus, Star, ArrowUp, ArrowDown, MoreVertical, Cloud, Server, Database, Wifi, HardDrive, Backup, Hotspot } from 'lucide-react';
+import { CreditCard, Plus, Star, ArrowUp, ArrowDown, MoreVertical, Cloud, Server, Database, Wifi, HardDrive, Archive, Signal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -38,8 +37,8 @@ const serviceTypeIcons: Record<string, React.ReactNode> = {
   database: <Database className="h-4 w-4 text-green-500" />,
   wifi: <Wifi className="h-4 w-4 text-indigo-500" />,
   'hard-drive': <HardDrive className="h-4 w-4 text-yellow-500" />,
-  backup: <Backup className="h-4 w-4 text-teal-500" />,
-  hotspot: <Hotspot className="h-4 w-4 text-orange-500" />,
+  archive: <Archive className="h-4 w-4 text-teal-500" />,
+  signal: <Signal className="h-4 w-4 text-orange-500" />,
 };
 
 const PlansList: React.FC<PlansListProps> = ({
