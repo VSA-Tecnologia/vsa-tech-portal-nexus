@@ -21,6 +21,7 @@ import ForgotPassword from "./pages/admin/auth/ForgotPassword";
 import Users from "./pages/admin/Users";
 import Content from "./pages/admin/Content";
 import Services from "./pages/admin/services/Services";
+import Plans from "./pages/admin/plans/Plans";
 import Messages from "./pages/admin/Messages";
 import Settings from "./pages/admin/Settings";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="users" element={<Users />} />
               <Route path="content" element={<Content />} />
               <Route path="services" element={<Services />} />
+              <Route path="plans" element={<Plans />} />
               <Route path="messages" element={<Messages />} />
               <Route path="settings" element={<Settings />} />
             </Route>
