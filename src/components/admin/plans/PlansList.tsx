@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CreditCard, Plus, Star, ArrowUp, ArrowDown, MoreVertical } from 'lucide-react';
+import { CreditCard, Plus, Star, ArrowUp, ArrowDown, MoreVertical, Cloud, Server, Database, Wifi, HardDrive, Backup, Hotspot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -32,6 +32,16 @@ interface PlansListProps {
   onReorder: (planId: number, direction: 'up' | 'down') => void;
 }
 
+const serviceTypeIcons: Record<string, React.ReactNode> = {
+  cloud: <Cloud className="h-4 w-4 text-blue-500" />,
+  server: <Server className="h-4 w-4 text-purple-500" />,
+  database: <Database className="h-4 w-4 text-green-500" />,
+  wifi: <Wifi className="h-4 w-4 text-indigo-500" />,
+  'hard-drive': <HardDrive className="h-4 w-4 text-yellow-500" />,
+  backup: <Backup className="h-4 w-4 text-teal-500" />,
+  hotspot: <Hotspot className="h-4 w-4 text-orange-500" />,
+};
+
 const PlansList: React.FC<PlansListProps> = ({
   plans,
   onCreateNew,
@@ -58,6 +68,7 @@ const PlansList: React.FC<PlansListProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead>Nome</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead>Preço</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Última Atualização</TableHead>
@@ -74,6 +85,14 @@ const PlansList: React.FC<PlansListProps> = ({
                       <Star className="h-4 w-4 mr-2 text-yellow-500" />
                     )}
                     {plan.name}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    {serviceTypeIcons[plan.serviceType]}
+                    <span className="ml-2 text-sm text-gray-600 capitalize">
+                      {plan.serviceType.replace('-', ' ')}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell>{plan.price}</TableCell>

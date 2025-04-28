@@ -15,6 +15,7 @@ export interface Plan {
   buttonText: string;
   order: number;
   status: 'draft' | 'published';
+  serviceType: 'cloud' | 'server' | 'database' | 'wifi' | 'hard-drive' | 'backup' | 'hotspot';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +40,7 @@ export const mockPlans: Plan[] = [
     buttonText: 'Começar agora',
     order: 1,
     status: 'published',
+    serviceType: 'cloud',
     createdAt: new Date('2023-10-15'),
     updatedAt: new Date('2023-10-15'),
   },
@@ -61,6 +63,7 @@ export const mockPlans: Plan[] = [
     buttonText: 'Escolher este plano',
     order: 2,
     status: 'published',
+    serviceType: 'server',
     createdAt: new Date('2023-10-15'),
     updatedAt: new Date('2023-10-15'),
   },
@@ -82,6 +85,7 @@ export const mockPlans: Plan[] = [
     buttonText: 'Fale com um consultor',
     order: 3,
     status: 'published',
+    serviceType: 'database',
     createdAt: new Date('2023-10-15'),
     updatedAt: new Date('2023-10-15'),
   }

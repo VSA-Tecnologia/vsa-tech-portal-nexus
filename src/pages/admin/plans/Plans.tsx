@@ -1,14 +1,14 @@
-
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react'; 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import PlansList from '@/components/admin/plans/PlansList';
 import PlanEditor from '@/components/admin/plans/PlanEditor';
-import { Plan, mockPlans } from '@/types/plan';
+import { Plan } from '@/types/plan';
+import { usePlansStore } from '@/stores/plansStore';
 
 const Plans: React.FC = () => {
-  const [plans, setPlans] = useState<Plan[]>(mockPlans);
+  const { plans, setPlan, addPlan, deletePlan, toggleFeatured, reorderPlan } = usePlansStore();
   const [currentPlan, setCurrentPlan] = useState<Plan | undefined>(undefined);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -27,7 +27,7 @@ const Plans: React.FC = () => {
   const handleSavePlan = (plan: Plan) => {
     if (plans.find(p => p.id === plan.id)) {
       // Update existing plan
-      setPlans(plans.map(p => p.id === plan.id ? plan : p));
+      setPlan(plan);
       toast.success('Plano atualizado com sucesso!');
     } else {
       // Add new plan
@@ -38,7 +38,7 @@ const Plans: React.FC = () => {
           ? Math.max(...plans.map(p => p.order)) + 1 
           : 1
       };
-      setPlans([...plans, newPlan]);
+      addPlan(newPlan);
       toast.success('Plano criado com sucesso!');
     }
     setIsEditorOpen(false);
@@ -46,7 +46,7 @@ const Plans: React.FC = () => {
   
   const handleDeletePlan = (planId: number) => {
     if (window.confirm('Tem certeza que deseja excluir este plano?')) {
-      setPlans(plans.filter(p => p.id !== planId));
+      deletePlan(planId);
       toast.success('Plano excluído com sucesso!');
     }
   };
@@ -57,27 +57,7 @@ const Plans: React.FC = () => {
   };
   
   const handleToggleFeatured = (planId: number) => {
-    // If this plan is being set as featured, unflag any other featured plans
-    const updatedPlans = plans.map(plan => {
-      if (plan.id === planId) {
-        return {
-          ...plan,
-          popular: !plan.popular
-        };
-      }
-      
-      // If we're marking a new plan as popular, unmark others
-      if (!plans.find(p => p.id === planId)?.popular && plan.popular) {
-        return {
-          ...plan,
-          popular: false
-        };
-      }
-      
-      return plan;
-    });
-    
-    setPlans(updatedPlans);
+    toggleFeatured(planId);
     
     const plan = plans.find(p => p.id === planId);
     if (plan) {
@@ -86,27 +66,7 @@ const Plans: React.FC = () => {
   };
   
   const handleReorderPlan = (planId: number, direction: 'up' | 'down') => {
-    const planIndex = plans.findIndex(p => p.id === planId);
-    if (planIndex === -1) return;
-    
-    const sortedPlans = [...plans].sort((a, b) => a.order - b.order);
-    const sortedPlanIndex = sortedPlans.findIndex(p => p.id === planId);
-    
-    if (direction === 'up' && sortedPlanIndex > 0) {
-      // Swap with the previous plan
-      const newPlans = [...sortedPlans];
-      const temp = newPlans[sortedPlanIndex].order;
-      newPlans[sortedPlanIndex].order = newPlans[sortedPlanIndex - 1].order;
-      newPlans[sortedPlanIndex - 1].order = temp;
-      setPlans(newPlans);
-    } else if (direction === 'down' && sortedPlanIndex < sortedPlans.length - 1) {
-      // Swap with the next plan
-      const newPlans = [...sortedPlans];
-      const temp = newPlans[sortedPlanIndex].order;
-      newPlans[sortedPlanIndex].order = newPlans[sortedPlanIndex + 1].order;
-      newPlans[sortedPlanIndex + 1].order = temp;
-      setPlans(newPlans);
-    }
+    reorderPlan(planId, direction);
   };
   
   return (

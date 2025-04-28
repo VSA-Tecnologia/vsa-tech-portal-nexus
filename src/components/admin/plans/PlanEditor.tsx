@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Check, Plus, Trash2, X } from 'lucide-react';
+import { Check, Plus, Trash2, X, Cloud, Server, Database, Wifi, HardDrive, Backup, Hotspot } from 'lucide-react';
 import { 
   Form, 
   FormControl, 
@@ -14,6 +14,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plan, PlanFeature } from '@/types/plan';
 import { DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -22,6 +29,16 @@ interface PlanEditorProps {
   onSave: (plan: Plan) => void;
   onCancel: () => void;
 }
+
+const serviceTypeIcons = {
+  cloud: <Cloud className="h-4 w-4 mr-2" />,
+  server: <Server className="h-4 w-4 mr-2" />,
+  database: <Database className="h-4 w-4 mr-2" />,
+  wifi: <Wifi className="h-4 w-4 mr-2" />,
+  'hard-drive': <HardDrive className="h-4 w-4 mr-2" />,
+  backup: <Backup className="h-4 w-4 mr-2" />,
+  hotspot: <Hotspot className="h-4 w-4 mr-2" />,
+};
 
 const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
   // Generate a unique ID for new plans
@@ -38,6 +55,7 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
     buttonText: plan?.buttonText || 'Contratar',
     popular: plan?.popular || false,
     status: plan?.status || 'draft',
+    serviceType: plan?.serviceType || 'cloud',
   };
 
   const form = useForm({
@@ -77,6 +95,7 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
       buttonText: data.buttonText,
       popular: data.popular,
       status: data.status,
+      serviceType: data.serviceType,
       order: plan?.order || 999, // Will be reordered when saved
       createdAt: plan?.createdAt || new Date(),
       updatedAt: new Date(),
@@ -122,6 +141,64 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="serviceType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo de Serviço</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um tipo de serviço" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="cloud">
+                      <div className="flex items-center">
+                        <Cloud className="h-4 w-4 mr-2" /> Cloud
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="server">
+                      <div className="flex items-center">
+                        <Server className="h-4 w-4 mr-2" /> Servidor
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="database">
+                      <div className="flex items-center">
+                        <Database className="h-4 w-4 mr-2" /> Banco de Dados
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="wifi">
+                      <div className="flex items-center">
+                        <Wifi className="h-4 w-4 mr-2" /> WiFi
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="hard-drive">
+                      <div className="flex items-center">
+                        <HardDrive className="h-4 w-4 mr-2" /> Armazenamento
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="backup">
+                      <div className="flex items-center">
+                        <Backup className="h-4 w-4 mr-2" /> Backup
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="hotspot">
+                      <div className="flex items-center">
+                        <Hotspot className="h-4 w-4 mr-2" /> Hotspot
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
