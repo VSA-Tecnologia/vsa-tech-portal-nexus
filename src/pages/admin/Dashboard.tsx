@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Users, Mail, Eye, ArrowUpRight, ArrowDownRight, Activity, 
@@ -9,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   
   // Mock data for the dashboard
   const stats = [
@@ -66,9 +65,11 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Bem-vindo, {profile?.name?.split(' ')[0] || 'Usuário'}!
+        </h1>
         <p className="text-muted-foreground">
-          Bem-vindo, {user?.name}! Aqui está o resumo da sua plataforma.
+          Aqui está um resumo das atividades do seu painel administrativo.
         </p>
       </div>
       

@@ -59,9 +59,9 @@ export const PortfolioItemViewer: React.FC<PortfolioItemViewerProps> = ({
           </div>
         )}
         
-        {item.completionDate && (
+        {item.completion_date && (
           <div className="mt-1 text-xs">
-            <span className="font-medium">Conclusão:</span> {new Date(item.completionDate).toLocaleDateString('pt-BR')}
+            <span className="font-medium">Conclusão:</span> {new Date(item.completion_date).toLocaleDateString('pt-BR')}
           </div>
         )}
         

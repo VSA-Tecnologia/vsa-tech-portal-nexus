@@ -15,10 +15,15 @@ const PlanFeatureManager: React.FC<PlanFeatureManagerProps> = ({ features, setFe
     features.length > 0 ? Math.max(...features.map(f => f.id)) + 1 : 1;
 
   const handleAddFeature = () => {
-    setFeatures([
-      ...features,
-      { id: generateFeatureId(), feature: '', included: true }
-    ]);
+    const newFeature: PlanFeature = {
+      id: generateFeatureId(),
+      plan_id: 0, // Will be set when the plan is saved
+      feature: '',
+      included: true,
+      order_position: features.length + 1,
+      created_at: new Date().toISOString()
+    };
+    setFeatures([...features, newFeature]);
   };
 
   const handleRemoveFeature = (featureId: number) => {

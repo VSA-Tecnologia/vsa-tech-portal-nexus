@@ -52,7 +52,7 @@ const PlanViewDialog: React.FC<PlanViewDialogProps> = ({ plan, isOpen, onOpenCha
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="text-sm font-medium text-gray-500">Botão:</span>
-                <p>{plan.buttonText}</p>
+                <p>{plan.button_text}</p>
               </div>
               <div>
                 <span className="text-sm font-medium text-gray-500">Status:</span>

@@ -109,11 +109,11 @@ export const PortfolioItemEditor: React.FC<PortfolioItemEditorProps> = ({
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="detailedDescription">Descrição Detalhada</Label>
+          <Label htmlFor="detailed_description">Descrição Detalhada</Label>
           <Textarea
-            id="detailedDescription"
-            value={formData.detailedDescription || ''}
-            onChange={(e) => handleChange('detailedDescription', e.target.value)}
+            id="detailed_description"
+            value={formData.detailed_description || ''}
+            onChange={(e) => handleChange('detailed_description', e.target.value)}
             placeholder="Descrição detalhada do projeto"
             rows={4}
           />
@@ -153,12 +153,12 @@ export const PortfolioItemEditor: React.FC<PortfolioItemEditorProps> = ({
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="completionDate">Data de Conclusão</Label>
+          <Label htmlFor="completion_date">Data de Conclusão</Label>
           <Input
-            id="completionDate"
+            id="completion_date"
             type="date"
-            value={formData.completionDate || ''}
-            onChange={(e) => handleChange('completionDate', e.target.value)}
+            value={formData.completion_date || ''}
+            onChange={(e) => handleChange('completion_date', e.target.value)}
           />
         </div>
         
