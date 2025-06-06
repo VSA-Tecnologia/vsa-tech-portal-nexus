@@ -1,10 +1,23 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Globe, Database, Shield, Laptop, Code, Server, BarChart3, Headphones 
 } from 'lucide-react';
+import { useSiteSectionsStore } from '@/stores/siteSectionsStore';
 
 const ServicesSection: React.FC = () => {
+  const { fetchEnabledSections, getSectionByKey } = useSiteSectionsStore();
+  
+  useEffect(() => {
+    fetchEnabledSections();
+  }, [fetchEnabledSections]);
+  
+  const servicesSection = getSectionByKey('services');
+  
+  // Fallback content if section is not loaded yet
+  const title = servicesSection?.title || 'Nossos Serviços';
+  const subtitle = servicesSection?.subtitle || 'Soluções completas em tecnologia para impulsionar a transformação digital do seu negócio';
+
   const services = [
     {
       icon: <Globe className="h-12 w-12" />,
@@ -52,9 +65,9 @@ const ServicesSection: React.FC = () => {
     <section id="services" className="py-20 bg-gray-50">
       <div className="container">
         <div className="text-center mb-16">
-          <h2 className="section-title">Nossos Serviços</h2>
+          <h2 className="section-title">{title}</h2>
           <p className="section-subtitle">
-            Soluções completas em tecnologia para impulsionar a transformação digital do seu negócio
+            {subtitle}
           </p>
         </div>
 

@@ -5,16 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockUsers, User } from '@/types/user';
+import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UsersToolbar } from '@/components/admin/users/UsersToolbar';
 import { UsersTable } from '@/components/admin/users/UsersTable';
 
 const Users: React.FC = () => {
   const { user } = useAuth();
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const { users, loading, updateUserStatus, deleteUser } = useUsers();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -25,27 +25,45 @@ const Users: React.FC = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  const handleDeleteClick = (user: User) => {
+  const handleDeleteClick = (user: UserProfile) => {
     setUserToDelete(user);
     setIsDeleteDialogOpen(true);
   };
   
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!userToDelete) return;
     
-    setUsers(users.filter(u => u.id !== userToDelete.id));
-    toast.success(`Usuário ${userToDelete.name} excluído com sucesso!`);
+    const result = await deleteUser(userToDelete.id);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success(`Usuário ${userToDelete.name} excluído com sucesso!`);
+    }
     setIsDeleteDialogOpen(false);
   };
   
-  const updateUserStatus = (userId: number, newStatus: 'active' | 'inactive') => {
-    setUsers(users.map(u => 
-      u.id === userId ? { ...u, status: newStatus } : u
-    ));
-    
-    const actionText = newStatus === 'active' ? 'ativado' : 'desativado';
-    toast.success(`Usuário ${actionText} com sucesso!`);
+  const handleUpdateUserStatus = async (userId: string, newStatus: 'active' | 'inactive') => {
+    const result = await updateUserStatus(userId, newStatus);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      const actionText = newStatus === 'active' ? 'ativado' : 'desativado';
+      toast.success(`Usuário ${actionText} com sucesso!`);
+    }
   };
+  
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Usuários</h1>
+          <p className="text-muted-foreground">
+            Carregando usuários...
+          </p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -58,7 +76,7 @@ const Users: React.FC = () => {
         <UsersTable 
           users={filteredUsers}
           onDeleteClick={handleDeleteClick}
-          onStatusChange={updateUserStatus}
+          onStatusChange={handleUpdateUserStatus}
         />
       </div>
       

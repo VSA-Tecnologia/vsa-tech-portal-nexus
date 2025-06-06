@@ -42,6 +42,83 @@ export type Database = {
         }
         Relationships: []
       }
+      page_categories: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pages: {
+        Row: {
+          category_id: number | null
+          content: string
+          created_at: string
+          excerpt: string
+          featured: boolean
+          id: number
+          image: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: number | null
+          content: string
+          created_at?: string
+          excerpt: string
+          featured?: boolean
+          id?: number
+          image?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: number | null
+          content?: string
+          created_at?: string
+          excerpt?: string
+          featured?: boolean
+          id?: number
+          image?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "page_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_features: {
         Row: {
           created_at: string
@@ -298,6 +375,42 @@ export type Database = {
           },
         ]
       }
+      site_sections: {
+        Row: {
+          content: string
+          created_at: string
+          enabled: boolean
+          id: number
+          image: string | null
+          section_key: string
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          enabled?: boolean
+          id?: number
+          image?: string | null
+          section_key: string
+          subtitle: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          enabled?: boolean
+          id?: number
+          image?: string | null
+          section_key?: string
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -309,6 +422,14 @@ export type Database = {
       }
       is_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      promote_user_by_id: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
+      promote_user_to_admin: {
+        Args: { user_email: string }
         Returns: boolean
       }
     }

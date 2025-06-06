@@ -1,49 +1,68 @@
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SectionManager } from '@/components/admin/content/sections/SectionManager';
 import { PageManager } from '@/components/admin/content/pages/PageManager';
-import { mockPages, mockPageCategories } from '@/types/page';
-import type { SectionContent } from '@/components/admin/content/sections/SectionManager';
+import { usePagesStore } from '@/stores/pagesStore';
+import { useSiteSectionsStore } from '@/stores/siteSectionsStore';
 
 const Content: React.FC = () => {
   const { user } = useAuth();
   const isEditor = user?.role === 'admin' || user?.role === 'editor';
   
-  const [pages, setPages] = useState(mockPages);
-  const [categories, setCategories] = useState(mockPageCategories);
-  const [isListView, setIsListView] = useState(false);
+  const { 
+    pages, 
+    categories, 
+    fetchPages, 
+    fetchCategories,
+    togglePageFeatured 
+  } = usePagesStore();
   
-  const [siteContent, setSiteContent] = useState<Record<string, SectionContent>>({
-    hero: {
-      title: 'Transformação Digital para seu Negócio',
-      subtitle: 'Soluções de tecnologia personalizadas para impulsionar sua empresa para o futuro.',
-      content: 'Especialistas em desenvolvimento web, infraestrutura e segurança.',
-      image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b',
-      enabled: true
-    },
-    about: {
-      title: 'Sobre a VSA Tecnologia',
-      subtitle: 'Há mais de uma década transformando negócios através de soluções tecnológicas inovadoras',
-      content: 'A VSA Tecnologia nasceu da visão de um grupo de especialistas determinados a transformar o mercado de TI no Brasil. Desde 2010, trabalhamos para trazer as melhores soluções tecnológicas personalizadas para empresas de todos os portes.',
-      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978',
-      enabled: true
-    },
-    services: {
-      title: 'Nossos Serviços',
-      subtitle: 'Soluções completas em tecnologia para impulsionar a transformação digital do seu negócio',
-      content: 'Oferecemos uma ampla gama de serviços, desde desenvolvimento web e sistemas ERP até infraestrutura e segurança da informação.',
-      image: '',
-      enabled: true
-    },
-    portfolio: {
-      title: 'Nosso Portfólio',
-      subtitle: 'Conheça alguns dos nossos principais projetos e casos de sucesso',
-      content: 'Projetos que demonstram nossa capacidade de entregar soluções completas e inovadoras.',
-      image: '',
-      enabled: true
+  const { 
+    sections,
+    fetchSections,
+    updateSection
+  } = useSiteSectionsStore();
+  
+  const [isListView, setIsListView] = React.useState(false);
+
+  // Load data on component mount
+  useEffect(() => {
+    fetchPages();
+    fetchCategories();
+    fetchSections();
+  }, [fetchPages, fetchCategories, fetchSections]);
+
+  // Convert sections array to the format expected by SectionManager
+  const siteContent = React.useMemo(() => {
+    const content: Record<string, any> = {};
+    sections.forEach(section => {
+      content[section.section_key] = {
+        title: section.title,
+        subtitle: section.subtitle,
+        content: section.content,
+        image: section.image || '',
+        enabled: section.enabled
+      };
+    });
+    return content;
+  }, [sections]);
+
+  const setSiteContent = React.useCallback(async (newContent: Record<string, any>) => {
+    // Update each section that has changed
+    for (const [sectionKey, sectionData] of Object.entries(newContent)) {
+      const existingSection = sections.find(s => s.section_key === sectionKey);
+      if (existingSection) {
+        await updateSection(existingSection.id, {
+          title: sectionData.title,
+          subtitle: sectionData.subtitle,
+          content: sectionData.content,
+          image: sectionData.image || null,
+          enabled: sectionData.enabled
+        });
+      }
     }
-  });
+  }, [sections, updateSection]);
 
   return (
     <div className="space-y-6">

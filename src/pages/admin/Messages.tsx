@@ -1,18 +1,43 @@
 
 import React, { useState } from 'react';
-import { mockMessages, Message } from '@/types/message';
+import { useMessages, ContactMessage } from '@/hooks/useMessages';
 import { MessagesTable } from '@/components/admin/messages/MessagesTable';
 import { MessagesToolbar } from '@/components/admin/messages/MessagesToolbar';
 import { MessageDetailsDialog } from '@/components/admin/messages/MessageDetailsDialog';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
+// Convert ContactMessage to Message format for components
+const convertToMessageFormat = (message: ContactMessage) => ({
+  id: message.id,
+  name: message.name,
+  email: message.email,
+  subject: message.subject,
+  message: message.message,
+  date: message.created_at,
+  read: message.status !== 'unread',
+  important: false, // We'll need to add this field to DB later if needed
+  status: message.status as 'pending' | 'responded' | 'archived'
+});
+
 const Messages: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const { 
+    messages: dbMessages, 
+    loading, 
+    updateMessage, 
+    deleteMessage,
+    markAsRead,
+    markAsResponded,
+    archiveMessage
+  } = useMessages();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [viewMessageModal, setViewMessageModal] = useState(false);
+  
+  // Convert database messages to component format
+  const messages = dbMessages.map(convertToMessageFormat);
   
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -34,55 +59,67 @@ const Messages: React.FC = () => {
     return matchesSearch;
   });
   
-  const viewMessage = (message: Message) => {
+  const viewMessage = async (message: any) => {
     if (!message.read) {
-      setMessages(messages.map(m => 
-        m.id === message.id ? { ...m, read: true } : m
-      ));
+      await markAsRead(message.id);
     }
     setSelectedMessage(message);
     setViewMessageModal(true);
   };
   
   const toggleImportant = (messageId: number) => {
-    setMessages(messages.map(m => 
-      m.id === messageId ? { ...m, important: !m.important } : m
-    ));
-    
-    const message = messages.find(m => m.id === messageId);
-    const action = message?.important ? 'removida dos importantes' : 'marcada como importante';
-    toast.success(`Mensagem ${action}`);
+    // For now, just show a toast since we don't have important field in DB
+    toast.success('Funcionalidade de importantes será implementada em breve');
   };
   
-  const archiveMessage = (messageId: number) => {
-    setMessages(messages.map(m => 
-      m.id === messageId ? { ...m, status: 'archived' } : m
-    ));
-    
-    toast.success('Mensagem arquivada');
-    if (selectedMessage?.id === messageId) {
-      setViewMessageModal(false);
+  const handleArchiveMessage = async (messageId: number) => {
+    const result = await archiveMessage(messageId);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success('Mensagem arquivada');
+      if (selectedMessage?.id === messageId) {
+        setViewMessageModal(false);
+      }
     }
   };
   
-  const markAsResponded = (messageId: number) => {
-    setMessages(messages.map(m => 
-      m.id === messageId ? { ...m, status: 'responded' } : m
-    ));
-    
-    toast.success('Mensagem marcada como respondida');
-    if (selectedMessage?.id === messageId) {
-      setViewMessageModal(false);
+  const handleMarkAsResponded = async (messageId: number) => {
+    const result = await markAsResponded(messageId);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success('Mensagem marcada como respondida');
+      if (selectedMessage?.id === messageId) {
+        setViewMessageModal(false);
+      }
     }
   };
   
-  const deleteMessage = (messageId: number) => {
-    setMessages(messages.filter(m => m.id !== messageId));
-    toast.success('Mensagem excluída');
-    if (selectedMessage?.id === messageId) {
-      setViewMessageModal(false);
+  const handleDeleteMessage = async (messageId: number) => {
+    const result = await deleteMessage(messageId);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success('Mensagem excluída');
+      if (selectedMessage?.id === messageId) {
+        setViewMessageModal(false);
+      }
     }
   };
+  
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Mensagens de Contato</h1>
+          <p className="text-muted-foreground">
+            Carregando mensagens...
+          </p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -111,9 +148,9 @@ const Messages: React.FC = () => {
             messages={filteredMessages}
             onMessageClick={viewMessage}
             onToggleImportant={toggleImportant}
-            onArchive={archiveMessage}
-            onMarkAsResponded={markAsResponded}
-            onDelete={deleteMessage}
+            onArchive={handleArchiveMessage}
+            onMarkAsResponded={handleMarkAsResponded}
+            onDelete={handleDeleteMessage}
           />
         </TabsContent>
       </Tabs>
@@ -123,9 +160,9 @@ const Messages: React.FC = () => {
         open={viewMessageModal}
         onOpenChange={setViewMessageModal}
         onToggleImportant={toggleImportant}
-        onArchive={archiveMessage}
-        onMarkAsResponded={markAsResponded}
-        onDelete={deleteMessage}
+        onArchive={handleArchiveMessage}
+        onMarkAsResponded={handleMarkAsResponded}
+        onDelete={handleDeleteMessage}
       />
     </div>
   );
