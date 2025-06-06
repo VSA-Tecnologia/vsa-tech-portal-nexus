@@ -1,12 +1,13 @@
+
 import React from 'react';
-import { Page, PageCategory } from '@/types/page';
+import { PageItem, PageCategory } from '@/types/page';
 import { ContentTabs } from '../ContentTabs';
 import { PageEditor } from '../PageEditor';
 import { PageCategoriesManager } from '../PageCategoriesManager';
 import { toast } from '@/hooks/use-toast';
 
 interface PageManagerProps {
-  pages: Page[];
+  pages: PageItem[];
   categories: PageCategory[];
   isListView: boolean;
   setIsListView: (value: boolean) => void;
@@ -18,7 +19,7 @@ export const PageManager: React.FC<PageManagerProps> = ({
   isListView,
   setIsListView
 }) => {
-  const [editingPage, setEditingPage] = React.useState<Page | null>(null);
+  const [editingPage, setEditingPage] = React.useState<PageItem | null>(null);
   const [isCreatingPage, setIsCreatingPage] = React.useState(false);
   const [showCategoryManager, setShowCategoryManager] = React.useState(false);
 
@@ -35,7 +36,7 @@ export const PageManager: React.FC<PageManagerProps> = ({
     }
   };
 
-  const handleSavePage = (page: Page) => {
+  const handleSavePage = (page: PageItem) => {
     if (isCreatingPage) {
       const newId = Math.max(...pages.map(p => p.id), 0) + 1;
       const newPage = {

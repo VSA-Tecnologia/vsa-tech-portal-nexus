@@ -11,10 +11,10 @@ import { PageCardImage } from './PageCardImage';
 import { PageCardActions } from './PageCardActions';
 import { StatusBadge } from './StatusBadge';
 import { TagsList } from './TagsList';
-import type { Page, PageCategory } from '@/types/page';
+import type { PageItem, PageCategory } from '@/types/page';
 
 interface PageCardProps {
-  page: Page;
+  page: PageItem;
   category?: PageCategory;
   onEdit: (pageId: number) => void;
   onToggleFeatured: (pageId: number, featured: boolean) => void;
@@ -76,9 +76,9 @@ export const PageCard: React.FC<PageCardProps> = ({
             <CardFooter className="pt-0 pb-4 flex justify-between items-center">
               <div className="flex items-center text-xs text-gray-500">
                 <Calendar className="h-3 w-3 mr-1" />
-                {format(new Date(page.updatedAt), "d 'de' MMMM, yyyy", { locale: ptBR })}
+                {format(new Date(page.updated_at), "d 'de' MMMM, yyyy", { locale: ptBR })}
                 <div className="flex items-center ml-4">
-                  <StatusBadge status={page.status} />
+                  <StatusBadge status={page.status as 'draft' | 'published'} />
                 </div>
               </div>
               <PageCardActions
@@ -129,7 +129,7 @@ export const PageCard: React.FC<PageCardProps> = ({
       <CardFooter className="pt-0">
         <div className="flex justify-between items-center w-full">
           <div className="text-xs text-gray-500">
-            {format(new Date(page.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
+            {format(new Date(page.updated_at), "dd/MM/yyyy", { locale: ptBR })}
           </div>
           <Button
             variant="ghost"

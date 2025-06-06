@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Page, PageCategory } from '@/types/page';
+import { PageItem, PageCategory } from '@/types/page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { 
@@ -22,9 +22,9 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 interface PageEditorProps {
-  page: Page | null;
+  page: PageItem | null;
   categories: PageCategory[];
-  onSave: (page: Page) => void;
+  onSave: (page: PageItem) => void;
   onCancel: () => void;
   isNew?: boolean;
 }
@@ -36,18 +36,19 @@ export const PageEditor: React.FC<PageEditorProps> = ({
   onCancel, 
   isNew = false 
 }) => {
-  const [form, setForm] = useState<Page>({
+  const [form, setForm] = useState<PageItem>({
     id: 0,
     title: '',
     slug: '',
     content: '',
     excerpt: '',
     featured: false,
-    categoryId: 1,
+    category_id: 1,
     status: 'draft',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: []
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    tags: [],
+    image: null
   });
   
   const [newTag, setNewTag] = useState('');
@@ -62,8 +63,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({
   }, [page]);
   
   const handleChange = (
-    field: keyof Page,
-    value: string | boolean | number | string[]
+    field: keyof PageItem,
+    value: string | boolean | number | string[] | null
   ) => {
     setForm(prev => {
       const updated = { ...prev, [field]: value };
@@ -103,10 +104,10 @@ export const PageEditor: React.FC<PageEditorProps> = ({
     
     setIsLoading(true);
     
-    // Ensuring updatedAt is set to current time
+    // Ensuring updated_at is set to current time
     const updatedPage = {
       ...form,
-      updatedAt: new Date().toISOString()
+      updated_at: new Date().toISOString()
     };
     
     // Simulate API call
@@ -236,8 +237,8 @@ export const PageEditor: React.FC<PageEditorProps> = ({
               <div className="space-y-2">
                 <Label htmlFor="category">Categoria</Label>
                 <Select
-                  value={form.categoryId.toString()}
-                  onValueChange={(value) => handleChange('categoryId', parseInt(value, 10))}
+                  value={form.category_id.toString()}
+                  onValueChange={(value) => handleChange('category_id', parseInt(value, 10))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma categoria" />
@@ -316,7 +317,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleChange('image', '')}
+                        onClick={() => handleChange('image', null)}
                         className="absolute top-2 right-2"
                       >
                         <X className="h-4 w-4" />

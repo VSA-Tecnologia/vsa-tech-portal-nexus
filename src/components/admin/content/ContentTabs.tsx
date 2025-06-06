@@ -12,11 +12,11 @@ import {
   CardFooter 
 } from '@/components/ui/card';
 import { PageCard } from './page-card/PageCard';
-import { Page, PageCategory } from '@/types/page';
+import { PageItem, PageCategory } from '@/types/page';
 
 interface ContentTabsProps {
   children?: React.ReactNode;
-  pages: Page[];
+  pages: PageItem[];
   categories: PageCategory[];
   onNewPage: () => void;
   onEditPage: (pageId: number) => void;
@@ -108,7 +108,7 @@ export const ContentTabs: React.FC<ContentTabsProps> = ({
                 <PageCard 
                   key={page.id} 
                   page={page}
-                  category={getCategoryById(page.categoryId)}
+                  category={getCategoryById(page.category_id)}
                   onEdit={onEditPage}
                   onToggleFeatured={onTogglePageFeatured}
                   isListView={true}
@@ -121,7 +121,7 @@ export const ContentTabs: React.FC<ContentTabsProps> = ({
                 <PageCard 
                   key={page.id} 
                   page={page}
-                  category={getCategoryById(page.categoryId)}
+                  category={getCategoryById(page.category_id)}
                   onEdit={onEditPage}
                   onToggleFeatured={onTogglePageFeatured}
                 />
