@@ -10,11 +10,18 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
+  // Legacy method names for compatibility
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  register: (email: string, password: string, name: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -176,11 +183,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     profile,
     loading,
+    isAuthenticated: !!user,
+    isLoading: loading,
     signIn,
     signUp,
     signOut,
     resetPassword,
     updateProfile,
+    // Legacy method names for compatibility
+    login: signIn,
+    register: signUp,
+    logout: signOut,
+    forgotPassword: resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -27,10 +27,10 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
     name: plan?.name || '',
     price: plan?.price || '',
     description: plan?.description || '',
-    buttonText: plan?.buttonText || 'Contratar',
+    buttonText: plan?.button_text || 'Contratar',
     popular: plan?.popular || false,
     status: plan?.status || 'draft',
-    serviceType: plan?.serviceType || 'cloud',
+    serviceType: plan?.service_type || 'cloud',
   };
 
   const form = useForm({
@@ -44,13 +44,13 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ plan, onSave, onCancel }) => {
       price: data.price,
       description: data.description,
       features: features,
-      buttonText: data.buttonText,
+      button_text: data.buttonText,
       popular: data.popular,
       status: data.status,
-      serviceType: data.serviceType,
-      order: plan?.order || 999,
-      createdAt: plan?.createdAt || new Date(),
-      updatedAt: new Date(),
+      service_type: data.serviceType,
+      order_position: plan?.order_position || 999,
+      created_at: plan?.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     onSave(updatedPlan);

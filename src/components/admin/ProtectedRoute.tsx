@@ -13,9 +13,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   requiredRole 
 }) => {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, profile, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
         <Loader2 className="h-8 w-8 animate-spin text-vsa-blue" />
@@ -28,12 +28,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check if role restriction applies
-  if (requiredRole && user?.role !== requiredRole) {
-    if (requiredRole === 'admin' && user?.role !== 'admin') {
+  if (requiredRole && profile?.role !== requiredRole) {
+    if (requiredRole === 'admin' && profile?.role !== 'admin') {
       return <Navigate to="/admin" replace />;
     }
 
-    if (requiredRole === 'editor' && user?.role === 'viewer') {
+    if (requiredRole === 'editor' && profile?.role === 'viewer') {
       return <Navigate to="/admin" replace />;
     }
   }

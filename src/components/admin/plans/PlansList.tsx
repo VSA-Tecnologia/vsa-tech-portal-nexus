@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CreditCard, Plus, Star, ArrowUp, ArrowDown, MoreVertical, Cloud, Server, Database, Wifi, HardDrive, Archive, Signal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -50,8 +51,8 @@ const PlansList: React.FC<PlansListProps> = ({
   onToggleFeatured,
   onReorder,
 }) => {
-  // Sort plans by order
-  const sortedPlans = [...plans].sort((a, b) => a.order - b.order);
+  // Sort plans by order_position
+  const sortedPlans = [...plans].sort((a, b) => a.order_position - b.order_position);
 
   return (
     <div className="space-y-4">
@@ -88,9 +89,9 @@ const PlansList: React.FC<PlansListProps> = ({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center">
-                    {serviceTypeIcons[plan.serviceType]}
+                    {serviceTypeIcons[plan.service_type]}
                     <span className="ml-2 text-sm text-gray-600 capitalize">
-                      {plan.serviceType.replace('-', ' ')}
+                      {plan.service_type.replace('-', ' ')}
                     </span>
                   </div>
                 </TableCell>
@@ -100,14 +101,14 @@ const PlansList: React.FC<PlansListProps> = ({
                     {plan.status === 'published' ? 'Publicado' : 'Rascunho'}
                   </Badge>
                 </TableCell>
-                <TableCell>{formatDate(plan.updatedAt)}</TableCell>
+                <TableCell>{formatDate(plan.updated_at)}</TableCell>
                 <TableCell>
                   <div className="flex space-x-1">
                     <Button
                       size="icon"
                       variant="ghost"
                       onClick={() => onReorder(plan.id, 'up')}
-                      disabled={plan.order === 1}
+                      disabled={plan.order_position === 1}
                     >
                       <ArrowUp className="h-4 w-4" />
                     </Button>
@@ -115,7 +116,7 @@ const PlansList: React.FC<PlansListProps> = ({
                       size="icon"
                       variant="ghost"
                       onClick={() => onReorder(plan.id, 'down')}
-                      disabled={plan.order === sortedPlans.length}
+                      disabled={plan.order_position === sortedPlans.length}
                     >
                       <ArrowDown className="h-4 w-4" />
                     </Button>

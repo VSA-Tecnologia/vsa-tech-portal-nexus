@@ -10,7 +10,7 @@ interface AdminHeaderProps {
 }
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center bg-white dark:bg-vsa-blue-dark border-b border-gray-200 dark:border-gray-800 px-4 shadow-sm">
@@ -66,12 +66,12 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
             Olá,
           </span>
           <span className="text-vsa-blue dark:text-white">
-            {user?.name?.split(' ')[0] || 'Usuário'}
+            {profile?.name?.split(' ')[0] || 'Usuário'}
           </span>
         </div>
 
         <div className="h-8 w-8 rounded-full bg-vsa-purple/20 text-vsa-purple flex items-center justify-center">
-          {user?.name?.charAt(0).toUpperCase() || 'U'}
+          {profile?.name?.charAt(0).toUpperCase() || 'U'}
         </div>
       </div>
     </header>

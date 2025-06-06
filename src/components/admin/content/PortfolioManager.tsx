@@ -7,7 +7,7 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 import { PortfolioItemEditor } from './PortfolioItemEditor';
 import { PortfolioItemViewer } from './PortfolioItemViewer';
 import { toast } from 'sonner';
-import { usePortfolioStore, useHydratedPortfolioStore, PortfolioItem } from '@/stores/portfolioStore';
+import { usePortfolioStore, useHydratedPortfolioStore, type PortfolioItem } from '@/stores/portfolioStore';
 
 interface PortfolioManagerProps {
   sectionContent: {
@@ -25,7 +25,14 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   onUpdateSectionContent
 }) => {
   // Use the portfolio store
-  const { items: portfolioItems, addItem, updateItem, toggleItemEnabled, setItems, forceUpdate } = usePortfolioStore();
+  const { 
+    items: portfolioItems, 
+    loading,
+    fetchItems,
+    createItem,
+    updateItem,
+    toggleEnabled
+  } = usePortfolioStore();
   const isHydrated = useHydratedPortfolioStore();
   
   const [currentItem, setCurrentItem] = useState<PortfolioItem | null>(null);
@@ -37,9 +44,9 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   useEffect(() => {
     if (isHydrated) {
       console.log("PortfolioManager: Initial sync of portfolio data");
-      forceUpdate();
+      fetchItems();
     }
-  }, [isHydrated, forceUpdate]);
+  }, [isHydrated, fetchItems]);
   
   // Ensure we update the section content whenever the portfolio items change
   useEffect(() => {
@@ -62,7 +69,14 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
       description: '',
       image: '',
       category: 'web',
-      enabled: true
+      enabled: true,
+      detailed_description: null,
+      technologies: null,
+      client: null,
+      completion_date: null,
+      url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
     setCurrentItem(newItem);
     setIsEditorOpen(true);
@@ -73,37 +87,39 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
     setIsEditorOpen(true);
   };
   
-  const handleSave = (item: PortfolioItem) => {
+  const handleSave = async (item: PortfolioItem) => {
     setIsLoading(true);
     
-    // Simulate API delay
-    setTimeout(() => {
+    try {
       if (portfolioItems.some(i => i.id === item.id)) {
         // Update existing item
-        updateItem(item);
+        await updateItem(item.id, item);
         toast.success('Item do portfólio atualizado com sucesso!');
         console.log("Portfolio item updated:", item.id, item.title);
       } else {
         // Add new item
-        addItem(item);
+        await createItem(item);
         toast.success('Item do portfólio criado com sucesso!');
         console.log("New portfolio item created:", item.title);
       }
       
       setIsEditorOpen(false);
       setCurrentItem(null);
-      setIsLoading(false);
       
       // Force update of section content to parent
       onUpdateSectionContent({
         ...sectionContent,
         lastUpdate: new Date().toISOString()
       });
-    }, 500);
+    } catch (error) {
+      toast.error('Erro ao salvar item do portfólio');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleToggleEnabled = (id: number, enabled: boolean) => {
-    toggleItemEnabled(id, enabled);
+  const handleToggleEnabled = async (id: number, enabled: boolean) => {
+    await toggleEnabled(id);
     toast.success(`Item ${enabled ? 'ativado' : 'desativado'} com sucesso!`);
     console.log("Toggled item enabled state:", id, enabled);
     
@@ -130,6 +146,15 @@ const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   const categories = Array.from(
     new Set(['all', ...portfolioItems.map(item => item.category)])
   );
+  
+  if (loading) {
+    return (
+      <div className="py-8 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-vsa-teal" />
+        <p className="mt-2 text-gray-500">Carregando portfólio...</p>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

@@ -1,10 +1,11 @@
 
+import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
-type PortfolioItem = Database['public']['Tables']['portfolio_items']['Row'];
+export type PortfolioItem = Database['public']['Tables']['portfolio_items']['Row'];
 type PortfolioInsert = Database['public']['Tables']['portfolio_items']['Insert'];
 type PortfolioUpdate = Database['public']['Tables']['portfolio_items']['Update'];
 

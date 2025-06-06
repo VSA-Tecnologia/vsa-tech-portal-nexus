@@ -14,7 +14,7 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, onClose }) => {
-  const { user, logout } = useAuth();
+  const { profile, signOut } = useAuth();
   
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -29,7 +29,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, onClose }) => {
   // Filter navigation items based on user role
   const filteredNav = navigation.filter(item => {
     if (item.requiredRole === 'admin') {
-      return user?.role === 'admin';
+      return profile?.role === 'admin';
     }
     return true;
   });
@@ -102,20 +102,20 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, onClose }) => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="h-9 w-9 rounded-full bg-vsa-purple/20 text-vsa-purple flex items-center justify-center">
-                    {user?.name.charAt(0).toUpperCase() || 'U'}
+                    {profile?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 </div>
                 <div className="ml-3 min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {user?.name || 'Usuário'}
+                    {profile?.name || 'Usuário'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {user?.role === 'admin' ? 'Administrador' : 
-                     user?.role === 'editor' ? 'Editor' : 'Visualizador'}
+                    {profile?.role === 'admin' ? 'Administrador' : 
+                     profile?.role === 'editor' ? 'Editor' : 'Visualizador'}
                   </p>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={signOut}
                   className="ml-auto p-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 >
                   <span className="text-xs">Sair</span>
