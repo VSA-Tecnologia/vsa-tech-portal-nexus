@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
@@ -20,7 +21,7 @@ type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 const ForgotPassword: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { forgotPassword } = useAuth();
+  const { resetPassword } = useAuth();
   
   const form = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -32,10 +33,20 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = async (data: ForgotPasswordValues) => {
     try {
       setIsLoading(true);
-      await forgotPassword(data.email);
-      setEmailSent(true);
+      console.log('Requesting password reset for:', data.email);
+      
+      const result = await resetPassword(data.email);
+      
+      if (result.error) {
+        console.error('Password reset failed:', result.error);
+        toast.error(result.error);
+      } else {
+        console.log('Password reset email sent successfully');
+        setEmailSent(true);
+      }
     } catch (error) {
       console.error('Password reset request failed:', error);
+      toast.error('Erro inesperado ao solicitar recuperação de senha');
     } finally {
       setIsLoading(false);
     }
@@ -87,6 +98,7 @@ const ForgotPassword: React.FC = () => {
                             placeholder="seu@email.com" 
                             {...field} 
                             autoComplete="email"
+                            disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />

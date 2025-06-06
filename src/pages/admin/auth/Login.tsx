@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
@@ -20,7 +21,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const form = useForm<LoginValues>({
@@ -30,14 +31,32 @@ const Login: React.FC = () => {
       password: '',
     },
   });
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin');
+    }
+  }, [isAuthenticated, navigate]);
   
   const onSubmit = async (data: LoginValues) => {
     try {
       setIsLoading(true);
-      await login(data.email, data.password);
-      navigate('/admin');
+      console.log('Submitting login form:', data.email);
+      
+      const result = await signIn(data.email, data.password);
+      
+      if (result.error) {
+        console.error('Login failed:', result.error);
+        toast.error(result.error);
+      } else {
+        console.log('Login successful, navigating to admin...');
+        navigate('/admin');
+      }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Login form error:', error);
+      toast.error('Erro inesperado durante o login');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -72,6 +91,7 @@ const Login: React.FC = () => {
                           placeholder="seu@email.com" 
                           {...field} 
                           autoComplete="email"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -91,6 +111,7 @@ const Login: React.FC = () => {
                           placeholder="********" 
                           {...field} 
                           autoComplete="current-password"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />

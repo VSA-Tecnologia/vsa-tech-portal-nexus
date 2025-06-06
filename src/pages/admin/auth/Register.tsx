@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 const registerSchema = z.object({
   name: z.string().min(1, { message: 'Nome é obrigatório' }),
@@ -25,7 +26,7 @@ type RegisterValues = z.infer<typeof registerSchema>;
 
 const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { signUp, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const form = useForm<RegisterValues>({
@@ -37,14 +38,33 @@ const Register: React.FC = () => {
       confirmPassword: '',
     },
   });
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin');
+    }
+  }, [isAuthenticated, navigate]);
   
   const onSubmit = async (data: RegisterValues) => {
     try {
       setIsLoading(true);
-      await register(data.name, data.email, data.password);
-      navigate('/admin');
+      console.log('Submitting register form:', data.email);
+      
+      const result = await signUp(data.email, data.password, data.name);
+      
+      if (result.error) {
+        console.error('Registration failed:', result.error);
+        toast.error(result.error);
+      } else {
+        console.log('Registration successful');
+        // Don't navigate immediately, let the auth state change handle it
+        // or show a message about email confirmation if needed
+      }
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Registration form error:', error);
+      toast.error('Erro inesperado durante o cadastro');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -79,6 +99,7 @@ const Register: React.FC = () => {
                           placeholder="Seu nome" 
                           {...field} 
                           autoComplete="name"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -97,6 +118,7 @@ const Register: React.FC = () => {
                           placeholder="seu@email.com" 
                           {...field} 
                           autoComplete="email"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -116,6 +138,7 @@ const Register: React.FC = () => {
                           placeholder="********" 
                           {...field} 
                           autoComplete="new-password"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -135,6 +158,7 @@ const Register: React.FC = () => {
                           placeholder="********" 
                           {...field} 
                           autoComplete="new-password"
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
