@@ -9,16 +9,322 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+          message: string
+          name: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: number
+          message: string
+          name: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: number
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plan_features: {
+        Row: {
+          created_at: string
+          feature: string
+          id: number
+          included: boolean
+          order_position: number
+          plan_id: number
+        }
+        Insert: {
+          created_at?: string
+          feature: string
+          id?: number
+          included?: boolean
+          order_position?: number
+          plan_id: number
+        }
+        Update: {
+          created_at?: string
+          feature?: string
+          id?: number
+          included?: boolean
+          order_position?: number
+          plan_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_features_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          button_text: string
+          created_at: string
+          description: string
+          id: number
+          name: string
+          order_position: number
+          popular: boolean
+          price: string
+          service_type: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["plan_status"]
+          updated_at: string
+        }
+        Insert: {
+          button_text?: string
+          created_at?: string
+          description: string
+          id?: number
+          name: string
+          order_position?: number
+          popular?: boolean
+          price: string
+          service_type?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["plan_status"]
+          updated_at?: string
+        }
+        Update: {
+          button_text?: string
+          created_at?: string
+          description?: string
+          id?: number
+          name?: string
+          order_position?: number
+          popular?: boolean
+          price?: string
+          service_type?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["plan_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      portfolio_items: {
+        Row: {
+          category: string
+          client: string | null
+          completion_date: string | null
+          created_at: string
+          description: string
+          detailed_description: string | null
+          enabled: boolean
+          id: number
+          image: string
+          technologies: string[] | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          category: string
+          client?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description: string
+          detailed_description?: string | null
+          enabled?: boolean
+          id?: number
+          image: string
+          technologies?: string[] | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          category?: string
+          client?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string
+          detailed_description?: string | null
+          enabled?: boolean
+          id?: number
+          image?: string
+          technologies?: string[] | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          last_login: string | null
+          name: string
+          role: Database["public"]["Enums"]["user_role"]
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          last_login?: string | null
+          name: string
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          last_login?: string | null
+          name?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      service_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: number
+          name: string
+          order_position: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: number
+          name: string
+          order_position?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: number
+          name?: string
+          order_position?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          benefits: string[] | null
+          category_id: number
+          complexity: Database["public"]["Enums"]["service_complexity"]
+          content: string
+          cover_image: string | null
+          created_at: string
+          featured: boolean
+          id: number
+          order_position: number
+          short_description: string
+          slug: string
+          status: Database["public"]["Enums"]["service_status"]
+          technologies: string[] | null
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          benefits?: string[] | null
+          category_id: number
+          complexity?: Database["public"]["Enums"]["service_complexity"]
+          content: string
+          cover_image?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: number
+          order_position?: number
+          short_description: string
+          slug: string
+          status?: Database["public"]["Enums"]["service_status"]
+          technologies?: string[] | null
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          benefits?: string[] | null
+          category_id?: number
+          complexity?: Database["public"]["Enums"]["service_complexity"]
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: number
+          order_position?: number
+          short_description?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["service_status"]
+          technologies?: string[] | null
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      plan_status: "draft" | "published"
+      service_complexity: "basic" | "intermediate" | "advanced"
+      service_status: "draft" | "published"
+      service_type:
+        | "cloud"
+        | "server"
+        | "database"
+        | "wifi"
+        | "hard-drive"
+        | "archive"
+        | "signal"
+      user_role: "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +439,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      plan_status: ["draft", "published"],
+      service_complexity: ["basic", "intermediate", "advanced"],
+      service_status: ["draft", "published"],
+      service_type: [
+        "cloud",
+        "server",
+        "database",
+        "wifi",
+        "hard-drive",
+        "archive",
+        "signal",
+      ],
+      user_role: ["admin", "editor", "viewer"],
+    },
   },
 } as const

@@ -3,31 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExternalLink } from 'lucide-react';
-import { usePortfolioStore, useHydratedPortfolioStore } from '@/stores/portfolioStore';
+import { usePortfolioStore } from '@/stores/portfolioStore';
 
 const PortfolioSection: React.FC = () => {
-  // Get portfolio items from the centralized store
-  const { items, getEnabledItems } = usePortfolioStore();
-  const isHydrated = useHydratedPortfolioStore();
-  
-  // Only use enabled portfolio items in the public view
-  const [portfolioItems, setPortfolioItems] = useState(getEnabledItems());
-  const [loading, setLoading] = useState(!isHydrated);
-  
-  // Update portfolio items when the store is hydrated or items change
-  useEffect(() => {
-    if (isHydrated) {
-      setPortfolioItems(getEnabledItems());
-      setLoading(false);
-      console.log("Portfolio section updated with", getEnabledItems().length, "enabled items");
-    }
-  }, [isHydrated, items, getEnabledItems]);
-  
-  const categories = ['all', 'web', 'erp', 'cloud', 'app', 'security'];
+  const { items, loading, fetchEnabledItems } = usePortfolioStore();
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
   
-  const filteredItems = portfolioItems.filter(
+  useEffect(() => {
+    fetchEnabledItems();
+  }, [fetchEnabledItems]);
+  
+  const categories = ['all', 'web', 'erp', 'cloud', 'app', 'security'];
+  
+  const filteredItems = items.filter(
     item => activeCategory === 'all' || item.category === activeCategory
   );
   
@@ -143,10 +132,10 @@ const PortfolioSection: React.FC = () => {
                     <h3 className="text-2xl font-bold mb-2">{selectedItem.title}</h3>
                     <p className="mb-4">{selectedItem.description}</p>
                     
-                    {selectedItem.detailedDescription && (
+                    {selectedItem.detailed_description && (
                       <div className="mb-4">
                         <h4 className="text-lg font-semibold mb-2">Descrição Detalhada</h4>
-                        <p className="text-gray-700">{selectedItem.detailedDescription}</p>
+                        <p className="text-gray-700">{selectedItem.detailed_description}</p>
                       </div>
                     )}
                     
@@ -158,10 +147,10 @@ const PortfolioSection: React.FC = () => {
                         </div>
                       )}
                       
-                      {selectedItem.completionDate && (
+                      {selectedItem.completion_date && (
                         <div>
                           <h4 className="font-semibold">Data de Conclusão</h4>
-                          <p>{new Date(selectedItem.completionDate).toLocaleDateString('pt-BR')}</p>
+                          <p>{new Date(selectedItem.completion_date).toLocaleDateString('pt-BR')}</p>
                         </div>
                       )}
                     </div>

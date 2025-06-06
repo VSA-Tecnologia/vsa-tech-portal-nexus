@@ -1,24 +1,20 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 
-export type UserRole = 'admin' | 'editor' | 'viewer';
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: UserRole;
-}
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-  forgotPassword: (email: string) => Promise<void>;
+  profile: Profile | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error?: string }>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,109 +27,161 @@ export const useAuth = () => {
   return context;
 };
 
-// Mock API functions that would be replaced with actual API calls
-const mockLogin = async (email: string, password: string): Promise<User> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // Demo users
-  const users = [
-    { id: 1, name: 'Admin User', email: 'admin@vsa.com', role: 'admin' as UserRole, password: 'admin123' },
-    { id: 2, name: 'Editor User', email: 'editor@vsa.com', role: 'editor' as UserRole, password: 'editor123' },
-    { id: 3, name: 'Viewer User', email: 'viewer@vsa.com', role: 'viewer' as UserRole, password: 'viewer123' }
-  ];
-  
-  const user = users.find(u => u.email === email && u.password === password);
-  
-  if (user) {
-    // Remove password before returning
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword as User;
-  }
-  
-  throw new Error('Invalid email or password');
-};
-
-const mockRegister = async (name: string, email: string, password: string): Promise<User> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // In a real app, this would send the data to an API
-  return {
-    id: Math.floor(Math.random() * 1000),
-    name,
-    email,
-    role: 'viewer' // New users are viewers by default
-  };
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // Check for stored user on component mount
-    const storedUser = localStorage.getItem('vsa_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      }
+      setLoading(false);
+    };
+
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
-  
-  const login = async (email: string, password: string) => {
+
+  const fetchProfile = async (userId: string) => {
     try {
-      setIsLoading(true);
-      const userData = await mockLogin(email, password);
-      setUser(userData);
-      localStorage.setItem('vsa_user', JSON.stringify(userData));
-      toast.success('Login successful!');
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(data);
+      
+      // Update last login
+      await supabase
+        .from('profiles')
+        .update({ last_login: new Date().toISOString() })
+        .eq('id', userId);
+        
     } catch (error) {
-      toast.error('Invalid email or password');
-      throw error;
-    } finally {
-      setIsLoading(false);
+      console.error('Error in fetchProfile:', error);
     }
   };
-  
-  const register = async (name: string, email: string, password: string) => {
+
+  const signIn = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
-      const userData = await mockRegister(name, email, password);
-      setUser(userData);
-      localStorage.setItem('vsa_user', JSON.stringify(userData));
-      toast.success('Registration successful!');
-    } catch (error: any) {
-      toast.error(error.message || 'Registration failed');
-      throw error;
-    } finally {
-      setIsLoading(false);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return {};
+    } catch (error) {
+      return { error: 'Erro inesperado no login' };
     }
   };
-  
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('vsa_user');
-    toast.info('You have been logged out');
+
+  const signUp = async (email: string, password: string, name: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          },
+        },
+      });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return {};
+    } catch (error) {
+      return { error: 'Erro inesperado no cadastro' };
+    }
   };
-  
-  const forgotPassword = async (email: string) => {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    toast.success('If your email exists in our system, you will receive a password reset link shortly.');
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
   };
-  
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        register,
-        logout,
-        forgotPassword,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return {};
+    } catch (error) {
+      return { error: 'Erro ao enviar email de recuperação' };
+    }
+  };
+
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) {
+      return { error: 'Usuário não autenticado' };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      // Refresh profile
+      await fetchProfile(user.id);
+      return {};
+    } catch (error) {
+      return { error: 'Erro ao atualizar perfil' };
+    }
+  };
+
+  const value = {
+    user,
+    profile,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    updateProfile,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

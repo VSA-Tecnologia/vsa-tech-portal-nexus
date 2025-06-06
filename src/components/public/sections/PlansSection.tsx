@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Check, Cloud, Server, Database, Wifi, HardDrive, Archive, Signal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,12 +33,29 @@ const serviceTypeBackgrounds: Record<string, string> = {
 };
 
 const PlansSection: React.FC = () => {
-  const { plans } = usePlansStore();
+  const { plans, loading, fetchPublicPlans } = usePlansStore();
   
-  // Filter plans that are published and sort by order
-  const publishedPlans = plans
-    .filter((plan) => plan.status === 'published')
-    .sort((a, b) => a.order - b.order);
+  useEffect(() => {
+    fetchPublicPlans();
+  }, [fetchPublicPlans]);
+
+  if (loading) {
+    return (
+      <section id="plans" className="py-20 bg-gray-50">
+        <div className="container">
+          <div className="text-center mb-16">
+            <h2 className="section-title">Nossos Planos</h2>
+            <p className="section-subtitle">
+              Escolha o plano que melhor atende às necessidades da sua empresa
+            </p>
+          </div>
+          <div className="flex justify-center py-12">
+            <div className="animate-spin h-8 w-8 border-4 border-vsa-teal border-t-transparent rounded-full"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
   
   return (
     <section id="plans" className="py-20 bg-gray-50">
@@ -51,7 +68,7 @@ const PlansSection: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {publishedPlans.map((plan) => (
+          {plans.map((plan) => (
             <Card
               key={plan.id}
               className={`
@@ -73,8 +90,8 @@ const PlansSection: React.FC = () => {
                     <CardTitle className="text-xl font-bold text-vsa-blue">{plan.name}</CardTitle>
                     <CardDescription className="mt-2">{plan.description}</CardDescription>
                   </div>
-                  <div className={`p-3 rounded-full ${serviceTypeBackgrounds[plan.serviceType]}`}>
-                    {serviceTypeIcons[plan.serviceType]}
+                  <div className={`p-3 rounded-full ${serviceTypeBackgrounds[plan.service_type]}`}>
+                    {serviceTypeIcons[plan.service_type]}
                   </div>
                 </div>
               </CardHeader>
@@ -106,7 +123,7 @@ const PlansSection: React.FC = () => {
                       : 'bg-gray-800 hover:bg-gray-700'
                   }`}
                 >
-                  {plan.buttonText}
+                  {plan.button_text}
                 </Button>
               </CardFooter>
             </Card>
