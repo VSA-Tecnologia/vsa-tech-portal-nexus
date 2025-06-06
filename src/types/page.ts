@@ -1,6 +1,6 @@
 
-// This file now imports types from Supabase instead of defining mock data
+// Export types from Supabase for pages
 export type { 
-  PageItem, 
+  PageItem as Page, 
   PageCategory 
 } from '@/stores/pagesStore';

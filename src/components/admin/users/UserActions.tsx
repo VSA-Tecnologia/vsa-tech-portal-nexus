@@ -6,13 +6,12 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { User } from '@/types/user';
-import { toast } from 'sonner';
+import { UserProfile } from '@/hooks/useUsers';
 
 interface UserActionsProps {
-  user: User;
-  onDelete: (user: User) => void;
-  onStatusChange: (userId: number, newStatus: 'active' | 'inactive') => void;
+  user: UserProfile;
+  onDelete: (user: UserProfile) => void;
+  onStatusChange: (userId: string, newStatus: 'active' | 'inactive') => void;
 }
 
 export const UserActions: React.FC<UserActionsProps> = ({ user, onDelete, onStatusChange }) => {
@@ -44,7 +43,6 @@ export const UserActions: React.FC<UserActionsProps> = ({ user, onDelete, onStat
         <DropdownMenuItem 
           className="text-red-600"
           onClick={() => onDelete(user)}
-          disabled={user.id === 1}
         >
           <Trash2 className="mr-2 h-4 w-4" />
           <span>Excluir</span>

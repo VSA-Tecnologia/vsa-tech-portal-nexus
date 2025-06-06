@@ -4,18 +4,23 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { User } from '@/types/user';
+import { UserProfile } from '@/hooks/useUsers';
 import { UserActions } from './UserActions';
 
 interface UsersTableProps {
-  users: User[];
-  onDeleteClick: (user: User) => void;
-  onStatusChange: (userId: number, newStatus: 'active' | 'inactive') => void;
+  users: UserProfile[];
+  onDeleteClick: (user: UserProfile) => void;
+  onStatusChange: (userId: string, newStatus: 'active' | 'inactive') => void;
 }
 
 export const UsersTable: React.FC<UsersTableProps> = ({ 
   users, onDeleteClick, onStatusChange 
 }) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Nunca';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -48,7 +53,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   {user.status === 'active' ? 'Ativo' : 'Inativo'}
                 </Badge>
               </TableCell>
-              <TableCell>{user.lastLogin}</TableCell>
+              <TableCell>{formatDate(user.last_login)}</TableCell>
               <TableCell>
                 <UserActions 
                   user={user} 

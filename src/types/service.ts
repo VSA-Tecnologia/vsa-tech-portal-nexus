@@ -1,3 +1,4 @@
+
 export interface ServiceCategory {
   id: number;
   name: string;
@@ -27,5 +28,55 @@ export interface Service {
   order: number;
 }
 
-// Note: Service categories and services are now managed through Supabase
-// Use the existing services store for data management
+// Temporary mock data until we fully migrate to Supabase
+export const mockServiceCategories: ServiceCategory[] = [
+  { id: 1, name: 'Desenvolvimento Web', slug: 'desenvolvimento-web' },
+  { id: 2, name: 'Infraestrutura', slug: 'infraestrutura' },
+  { id: 3, name: 'Segurança', slug: 'seguranca' },
+  { id: 4, name: 'Consultoria', slug: 'consultoria' }
+];
+
+export const mockServices: Service[] = [
+  {
+    id: 1,
+    title: 'Desenvolvimento de Sites Responsivos',
+    slug: 'desenvolvimento-sites-responsivos',
+    categoryId: 1,
+    iconType: 'lucide',
+    iconName: 'Globe',
+    iconImage: '',
+    coverImage: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d',
+    shortDescription: 'Criação de sites modernos e responsivos para sua empresa.',
+    content: '<p>Desenvolvemos sites profissionais com design moderno e responsivo.</p>',
+    benefits: ['Design responsivo', 'SEO otimizado', 'Performance alta'],
+    technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+    complexity: 'intermediate',
+    status: 'published',
+    featured: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    viewCount: 245,
+    order: 1
+  },
+  {
+    id: 2,
+    title: 'Hospedagem em Nuvem',
+    slug: 'hospedagem-nuvem',
+    categoryId: 2,
+    iconType: 'lucide',
+    iconName: 'Cloud',
+    iconImage: '',
+    coverImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
+    shortDescription: 'Soluções de hospedagem seguras e escaláveis na nuvem.',
+    content: '<p>Oferecemos hospedagem em nuvem com alta disponibilidade.</p>',
+    benefits: ['99.9% uptime', 'Backup automático', 'Suporte 24/7'],
+    technologies: ['AWS', 'Docker', 'Kubernetes'],
+    complexity: 'advanced',
+    status: 'published',
+    featured: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    viewCount: 189,
+    order: 2
+  }
+];

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter 
@@ -77,11 +76,14 @@ export const PageCategoriesManager: React.FC<PageCategoriesManagerProps> = ({
     }
     
     const newId = Math.max(...localCategories.map(c => c.id), 0) + 1;
+    const now = new Date().toISOString();
     
     const newCategoryObj: PageCategory = {
       id: newId,
       name: newCategory.name,
-      slug: newCategory.slug || slugify(newCategory.name)
+      slug: newCategory.slug || slugify(newCategory.name),
+      created_at: now,
+      updated_at: now
     };
     
     setLocalCategories([...localCategories, newCategoryObj]);
