@@ -12,7 +12,7 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem 
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { Service, ServiceCategory } from '@/types/service';
+import { Service, ServiceCategory } from '@/stores/servicesStore';
 import { 
   Eye, MoreVertical, Pencil, Star, Trash2, Search, Filter, Plus, ChevronUp, ChevronDown 
 } from 'lucide-react';
@@ -48,10 +48,10 @@ const ServicesList: React.FC<ServicesListProps> = ({
   const filteredServices = services.filter(service => {
     // Search filter
     const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         service.shortDescription.toLowerCase().includes(searchTerm.toLowerCase());
+                         service.short_description.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Category filter
-    const matchesCategory = categoryFilter === 'all' || service.categoryId === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || service.category_id === categoryFilter;
     
     // Status filter
     const matchesStatus = statusFilter === 'all' || service.status === statusFilter;
@@ -63,7 +63,7 @@ const ServicesList: React.FC<ServicesListProps> = ({
   });
   
   // Sort by order
-  const sortedServices = [...filteredServices].sort((a, b) => a.order - b.order);
+  const sortedServices = [...filteredServices].sort((a, b) => a.order_position - b.order_position);
   
   // Find category name from categoryId
   const getCategoryName = (categoryId: number) => {
@@ -216,9 +216,9 @@ const ServicesList: React.FC<ServicesListProps> = ({
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100">
-                          {service.coverImage ? (
+                          {service.cover_image ? (
                             <img 
-                              src={service.coverImage}
+                              src={service.cover_image}
                               alt={service.title}
                               className="h-full w-full object-cover"
                             />
@@ -236,14 +236,14 @@ const ServicesList: React.FC<ServicesListProps> = ({
                             )}
                           </div>
                           <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {service.shortDescription}
+                            {service.short_description}
                           </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {getCategoryName(service.categoryId)}
+                        {getCategoryName(service.category_id)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -257,10 +257,10 @@ const ServicesList: React.FC<ServicesListProps> = ({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {format(new Date(service.updatedAt), 'dd/MM/yyyy')}
+                      {format(new Date(service.updated_at), 'dd/MM/yyyy')}
                     </TableCell>
                     <TableCell>
-                      {service.viewCount}
+                      {service.view_count}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>

@@ -12,40 +12,40 @@ import {
 import { 
   Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter 
 } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { Service, ServiceCategory, mockServiceCategories } from '@/types/service';
-import { Loader2, Save, X, Image, Plus, Trash2 } from 'lucide-react';
+import { Service, ServiceCategory, ServiceComplexity, ServiceStatus } from '@/stores/servicesStore';
+import { Loader2, Save, Plus, Trash2 } from 'lucide-react';
 import { slugify } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 
 interface ServiceEditorProps {
   service?: Service;
-  onSave: (service: Service) => void;
+  categories: ServiceCategory[];
+  onSave: (service: Partial<Service>) => void;
   onCancel: () => void;
 }
 
 const ServiceEditor: React.FC<ServiceEditorProps> = ({ 
-  service, onSave, onCancel 
+  service, categories, onSave, onCancel 
 }) => {
   const isNewService = !service;
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<Partial<Service>>(
-    service || {
+  const [formData, setFormData] = useState<Partial<Service>>(() => {
+    const maxOrder = Math.max(...(categories.map(c => c.order_position) || [0]), 0);
+    return service || {
       title: '',
       slug: '',
-      categoryId: 1,
-      iconType: 'lucide' as const,
-      iconName: 'code',
-      coverImage: '',
-      shortDescription: '',
+      category_id: categories[0]?.id || 1,
+      short_description: '',
       content: '',
       benefits: [],
       technologies: [],
-      complexity: 'basic' as const,
-      status: 'draft' as const,
+      complexity: 'basic' as ServiceComplexity,
+      status: 'draft' as ServiceStatus,
       featured: false,
-    }
-  );
+      order_position: maxOrder + 1,
+      cover_image: null,
+    };
+  });
   
   const [newBenefit, setNewBenefit] = useState('');
   const [newTechnology, setNewTechnology] = useState('');
@@ -95,46 +95,24 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     // Validate required fields
-    if (!formData.title || !formData.shortDescription || !formData.content) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
+    if (!formData.title || !formData.short_description || !formData.content) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
       setIsLoading(false);
       return;
     }
     
-    // Create a new service object
-    const serviceData: Service = {
-      id: service?.id || Date.now(),
-      title: formData.title!,
-      slug: formData.slug!,
-      categoryId: formData.categoryId!,
-      iconType: formData.iconType!,
-      iconName: formData.iconName,
-      iconImage: formData.iconImage,
-      coverImage: formData.coverImage!,
-      shortDescription: formData.shortDescription!,
-      content: formData.content!,
-      benefits: formData.benefits || [],
-      technologies: formData.technologies || [],
-      complexity: formData.complexity!,
-      status: formData.status!,
-      featured: formData.featured!,
-      createdAt: service?.createdAt || new Date(),
-      updatedAt: new Date(),
-      viewCount: service?.viewCount || 0,
-      order: service?.order || 0,
-    };
-    
-    // Simulate API call
-    setTimeout(() => {
-      onSave(serviceData);
+    try {
+      await onSave(formData);
+    } catch (error) {
+      console.error('Error saving service:', error);
+    } finally {
       setIsLoading(false);
-      toast.success(`Serviço ${isNewService ? 'criado' : 'atualizado'} com sucesso!`);
-    }, 1000);
+    }
   };
   
   const modules = {
@@ -173,7 +151,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 <Label htmlFor="title">Título do Serviço*</Label>
                 <Input
                   id="title"
-                  value={formData.title}
+                  value={formData.title || ''}
                   onChange={(e) => handleChange('title', e.target.value)}
                   required
                 />
@@ -183,7 +161,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 <Label htmlFor="slug">Slug (URL)*</Label>
                 <Input
                   id="slug"
-                  value={formData.slug}
+                  value={formData.slug || ''}
                   onChange={(e) => handleChange('slug', e.target.value)}
                   required
                 />
@@ -197,14 +175,14 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
               <div className="space-y-2">
                 <Label htmlFor="category">Categoria*</Label>
                 <Select 
-                  value={formData.categoryId?.toString()}
-                  onValueChange={(value) => handleChange('categoryId', parseInt(value, 10))}
+                  value={formData.category_id?.toString()}
+                  onValueChange={(value) => handleChange('category_id', parseInt(value, 10))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockServiceCategories.map((category) => (
+                    {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>
@@ -217,7 +195,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 <Label htmlFor="complexity">Nível de Complexidade*</Label>
                 <Select 
                   value={formData.complexity}
-                  onValueChange={(value) => handleChange('complexity', value as Service['complexity'])}
+                  onValueChange={(value) => handleChange('complexity', value as ServiceComplexity)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a complexidade" />
@@ -234,7 +212,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 <Label htmlFor="status">Status*</Label>
                 <Select 
                   value={formData.status}
-                  onValueChange={(value) => handleChange('status', value as Service['status'])}
+                  onValueChange={(value) => handleChange('status', value as ServiceStatus)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o status" />
@@ -250,94 +228,32 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
             <div className="flex items-center space-x-2">
               <Switch 
                 id="featured"
-                checked={formData.featured}
+                checked={formData.featured || false}
                 onCheckedChange={(checked) => handleChange('featured', checked)}
               />
               <Label htmlFor="featured">Destacar na página inicial</Label>
             </div>
           </div>
           
-          {/* Imagens e Ícones */}
+          {/* Imagem de Capa */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Imagem de Capa e Ícone</h3>
+            <h3 className="text-lg font-medium">Imagem de Capa</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="coverImage">URL da Imagem de Capa*</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="coverImage"
-                  value={formData.coverImage}
-                  onChange={(e) => handleChange('coverImage', e.target.value)}
-                  className="flex-1"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  className="flex-shrink-0"
-                >
-                  <Image className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
+              <Label htmlFor="coverImage">URL da Imagem de Capa</Label>
+              <Input
+                id="coverImage"
+                value={formData.cover_image || ''}
+                onChange={(e) => handleChange('cover_image', e.target.value || null)}
+                placeholder="https://exemplo.com/imagem.jpg"
+              />
               
-              {formData.coverImage && (
+              {formData.cover_image && (
                 <div className="mt-2 relative rounded-md overflow-hidden h-40">
                   <img 
-                    src={formData.coverImage} 
+                    src={formData.cover_image} 
                     alt="Prévia da imagem de capa" 
                     className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Tipo de Ícone*</Label>
-              <div className="flex gap-4">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="iconTypeLucide"
-                    name="iconType"
-                    checked={formData.iconType === 'lucide'}
-                    onChange={() => handleChange('iconType', 'lucide')}
-                    className="mr-2"
-                  />
-                  <label htmlFor="iconTypeLucide">Ícone Lucide</label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="iconTypeImage"
-                    name="iconType" 
-                    checked={formData.iconType === 'image'}
-                    onChange={() => handleChange('iconType', 'image')}
-                    className="mr-2"
-                  />
-                  <label htmlFor="iconTypeImage">Imagem</label>
-                </div>
-              </div>
-              
-              {formData.iconType === 'lucide' ? (
-                <div className="space-y-2">
-                  <Label htmlFor="iconName">Nome do Ícone Lucide</Label>
-                  <Input
-                    id="iconName"
-                    value={formData.iconName}
-                    onChange={(e) => handleChange('iconName', e.target.value)}
-                    placeholder="Ex: code, server, shield"
-                  />
-                  <p className="text-xs text-gray-500">
-                    Nome do ícone da biblioteca Lucide React.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="iconImage">URL da Imagem do Ícone</Label>
-                  <Input
-                    id="iconImage"
-                    value={formData.iconImage}
-                    onChange={(e) => handleChange('iconImage', e.target.value)}
                   />
                 </div>
               )}
@@ -352,8 +268,8 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
               <Label htmlFor="shortDescription">Descrição Curta*</Label>
               <Textarea
                 id="shortDescription"
-                value={formData.shortDescription}
-                onChange={(e) => handleChange('shortDescription', e.target.value)}
+                value={formData.short_description || ''}
+                onChange={(e) => handleChange('short_description', e.target.value)}
                 rows={2}
                 placeholder="Uma breve descrição do serviço (exibida na listagem)"
                 required
@@ -365,7 +281,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
               <div className="min-h-[200px]">
                 <ReactQuill
                   theme="snow"
-                  value={formData.content}
+                  value={formData.content || ''}
                   onChange={handleQuillChange}
                   modules={modules}
                   formats={formats}
@@ -385,6 +301,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 onChange={(e) => setNewBenefit(e.target.value)}
                 placeholder="Adicionar novo benefício"
                 className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addBenefit())}
               />
               <Button 
                 type="button"
@@ -430,6 +347,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                 onChange={(e) => setNewTechnology(e.target.value)}
                 placeholder="Adicionar nova tecnologia"
                 className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
               />
               <Button 
                 type="button"
@@ -453,7 +371,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({
                     onClick={() => removeTechnology(index)}
                     className="text-vsa-teal hover:text-vsa-teal-dark"
                   >
-                    <X className="h-3 w-3" />
+                    <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
               ))}

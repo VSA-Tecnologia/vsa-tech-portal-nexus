@@ -6,15 +6,25 @@ import {
 import ServicesList from '@/components/admin/services/ServicesList';
 import ServiceEditor from '@/components/admin/services/ServiceEditor';
 import CategoriesManager from '@/components/admin/services/CategoriesManager';
-import { Service, ServiceCategory, mockServices, mockServiceCategories } from '@/types/service';
+import { useServices } from '@/hooks/useServices';
+import { Service } from '@/types/service';
 import { toast } from 'sonner';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Loader2 } from 'lucide-react';
 
 const Services: React.FC = () => {
   const [activeTab, setActiveTab] = useState('list');
-  const [services, setServices] = useState<Service[]>(mockServices);
-  const [categories, setCategories] = useState<ServiceCategory[]>(mockServiceCategories);
+  const {
+    services,
+    categories,
+    isLoading,
+    error,
+    createService,
+    updateService,
+    deleteService,
+    toggleServiceFeatured,
+    reorderService
+  } = useServices();
   
   const [currentService, setCurrentService] = useState<Service | undefined>(undefined);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -31,21 +41,33 @@ const Services: React.FC = () => {
     setIsEditorOpen(true);
   };
   
-  const handleSaveService = (service: Service) => {
-    if (services.find(s => s.id === service.id)) {
-      // Update existing
-      setServices(services.map(s => s.id === service.id ? service : s));
-    } else {
-      // Add new
-      setServices([...services, service]);
+  const handleSaveService = async (serviceData: any) => {
+    try {
+      if (currentService) {
+        // Update existing
+        await updateService(currentService.id, serviceData);
+        toast.success('Serviço atualizado com sucesso!');
+      } else {
+        // Create new
+        await createService(serviceData);
+        toast.success('Serviço criado com sucesso!');
+      }
+      setIsEditorOpen(false);
+    } catch (error) {
+      console.error('Error saving service:', error);
+      toast.error('Erro ao salvar serviço. Tente novamente.');
     }
-    setIsEditorOpen(false);
   };
   
-  const handleDeleteService = (serviceId: number) => {
+  const handleDeleteService = async (serviceId: number) => {
     if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
-      setServices(services.filter(s => s.id !== serviceId));
-      toast.success('Serviço excluído com sucesso!');
+      try {
+        await deleteService(serviceId);
+        toast.success('Serviço excluído com sucesso!');
+      } catch (error) {
+        console.error('Error deleting service:', error);
+        toast.error('Erro ao excluir serviço. Tente novamente.');
+      }
     }
   };
   
@@ -54,52 +76,49 @@ const Services: React.FC = () => {
     setIsViewDialogOpen(true);
   };
   
-  const handleToggleFeatured = (serviceId: number) => {
-    setServices(services.map(service => {
-      if (service.id === serviceId) {
-        return {
-          ...service,
-          featured: !service.featured
-        };
-      }
-      return service;
-    }));
-    
-    const service = services.find(s => s.id === serviceId);
-    if (service) {
-      toast.success(`Serviço ${service.featured ? 'removido dos' : 'adicionado aos'} destaques!`);
+  const handleToggleFeatured = async (serviceId: number) => {
+    try {
+      await toggleServiceFeatured(serviceId);
+      const service = services.find(s => s.id === serviceId);
+      toast.success(`Serviço ${service?.featured ? 'removido dos' : 'adicionado aos'} destaques!`);
+    } catch (error) {
+      console.error('Error toggling featured:', error);
+      toast.error('Erro ao alterar destaque. Tente novamente.');
     }
   };
   
-  const handleReorderService = (serviceId: number, direction: 'up' | 'down') => {
-    const serviceIndex = services.findIndex(s => s.id === serviceId);
-    if (serviceIndex === -1) return;
-    
-    const newServices = [...services];
-    
-    if (direction === 'up' && serviceIndex > 0) {
-      // Move up
-      newServices[serviceIndex].order--;
-      newServices[serviceIndex - 1].order++;
-    } else if (direction === 'down' && serviceIndex < services.length - 1) {
-      // Move down
-      newServices[serviceIndex].order++;
-      newServices[serviceIndex + 1].order--;
+  const handleReorderService = async (serviceId: number, direction: 'up' | 'down') => {
+    try {
+      await reorderService(serviceId, direction);
+    } catch (error) {
+      console.error('Error reordering service:', error);
+      toast.error('Erro ao reordenar serviço. Tente novamente.');
     }
-    
-    // Re-sort based on order
-    newServices.sort((a, b) => a.order - b.order);
-    setServices(newServices);
-  };
-  
-  const handleSaveCategories = (updatedCategories: ServiceCategory[]) => {
-    setCategories(updatedCategories);
   };
   
   const getCategoryName = (categoryId: number) => {
     const category = categories.find(c => c.id === categoryId);
     return category ? category.name : 'Sem categoria';
   };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Erro ao carregar serviços</p>
+          <p className="text-sm text-gray-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -132,7 +151,10 @@ const Services: React.FC = () => {
         <TabsContent value="categories">
           <CategoriesManager 
             categories={categories}
-            onSave={handleSaveCategories}
+            onSave={() => {
+              // Categories are managed in real-time through the store
+              toast.success('Categorias atualizadas com sucesso!');
+            }}
           />
         </TabsContent>
       </Tabs>
@@ -143,6 +165,7 @@ const Services: React.FC = () => {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <ServiceEditor
               service={currentService}
+              categories={categories}
               onSave={handleSaveService}
               onCancel={() => setIsEditorOpen(false)}
             />
@@ -159,7 +182,7 @@ const Services: React.FC = () => {
                 <h2 className="text-2xl font-bold">{viewingService.title}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-muted-foreground">
-                    {getCategoryName(viewingService.categoryId)}
+                    {getCategoryName(viewingService.category_id)}
                   </span>
                   {viewingService.featured && (
                     <span className="text-yellow-500 text-sm flex items-center">
@@ -170,10 +193,10 @@ const Services: React.FC = () => {
                 </div>
               </div>
               
-              {viewingService.coverImage && (
+              {viewingService.cover_image && (
                 <div className="rounded-md overflow-hidden h-60">
                   <img 
-                    src={viewingService.coverImage} 
+                    src={viewingService.cover_image} 
                     alt={viewingService.title}
                     className="w-full h-full object-cover" 
                   />
@@ -181,7 +204,7 @@ const Services: React.FC = () => {
               )}
               
               <div className="space-y-4">
-                <p className="text-muted-foreground">{viewingService.shortDescription}</p>
+                <p className="text-muted-foreground">{viewingService.short_description}</p>
                 
                 <div 
                   className="prose max-w-none dark:prose-invert"
@@ -189,7 +212,7 @@ const Services: React.FC = () => {
                 />
               </div>
               
-              {viewingService.benefits.length > 0 && (
+              {viewingService.benefits && viewingService.benefits.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Benefícios</h3>
                   <ul className="list-disc list-inside space-y-1">
@@ -200,7 +223,7 @@ const Services: React.FC = () => {
                 </div>
               )}
               
-              {viewingService.technologies.length > 0 && (
+              {viewingService.technologies && viewingService.technologies.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Tecnologias</h3>
                   <div className="flex flex-wrap gap-2">
