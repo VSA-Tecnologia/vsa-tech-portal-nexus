@@ -9,18 +9,20 @@ interface PortfolioItemEditorDialogProps {
   onClose: () => void;
   item: PortfolioItem | null;
   isCreating: boolean;
+  onSave: (item: PortfolioItem) => Promise<void>;
 }
 
 export const PortfolioItemEditorDialog: React.FC<PortfolioItemEditorDialogProps> = ({
   isOpen,
   onClose,
   item,
-  isCreating
+  isCreating,
+  onSave
 }) => {
   if (!item) return null;
 
   const handleSave = async (updatedItem: PortfolioItem) => {
-    // The actual save logic will be handled by the parent component
+    await onSave(updatedItem);
     onClose();
   };
 

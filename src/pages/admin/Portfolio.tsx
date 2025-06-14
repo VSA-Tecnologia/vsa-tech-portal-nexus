@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Eye, Pencil, Trash2, MoreVertical, Image as ImageIcon } from 'lucide-react';
 import { 
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
@@ -315,6 +315,7 @@ const Portfolio: React.FC = () => {
         onClose={handleEditorClose}
         item={selectedItem}
         isCreating={isCreating}
+        onSave={handleSave}
       />
 
       <PortfolioItemViewerDialog
