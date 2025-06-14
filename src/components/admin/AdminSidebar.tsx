@@ -13,7 +13,7 @@ import {
   Settings,
   LogOut
 } from 'lucide-react';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: BarChart3 },
@@ -28,7 +28,7 @@ const navigation = [
 
 const AdminSidebar: React.FC = () => {
   const location = useLocation();
-  const { signOut } = useSupabaseAuth();
+  const { signOut } = useAuthContext();
 
   const handleSignOut = async () => {
     try {

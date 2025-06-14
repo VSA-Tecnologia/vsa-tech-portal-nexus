@@ -9,8 +9,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { usePortfolioStore } from '@/stores/portfolioStore';
 import { toast } from 'sonner';
-import PortfolioItemEditor from '@/components/admin/content/PortfolioItemEditor';
-import PortfolioItemViewer from '@/components/admin/content/PortfolioItemViewer';
+import { PortfolioItemEditorDialog } from '@/components/admin/content/PortfolioItemEditorDialog';
+import { PortfolioItemViewerDialog } from '@/components/admin/content/PortfolioItemViewerDialog';
 import type { PortfolioItem } from '@/stores/portfolioStore';
 
 const Portfolio: React.FC = () => {
@@ -18,6 +18,8 @@ const Portfolio: React.FC = () => {
     items, 
     loading, 
     fetchItems, 
+    createItem,
+    updateItem,
     deleteItem, 
     toggleEnabled 
   } = usePortfolioStore();
@@ -32,7 +34,22 @@ const Portfolio: React.FC = () => {
   }, [fetchItems]);
 
   const handleCreate = () => {
-    setSelectedItem(null);
+    const newItem: PortfolioItem = {
+      id: Date.now(),
+      title: '',
+      description: '',
+      image: '',
+      category: 'web',
+      enabled: true,
+      detailed_description: null,
+      technologies: null,
+      client: null,
+      completion_date: null,
+      url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setSelectedItem(newItem);
     setIsCreating(true);
     setIsEditorOpen(true);
   };
@@ -78,6 +95,21 @@ const Portfolio: React.FC = () => {
   const handleViewerClose = () => {
     setIsViewerOpen(false);
     setSelectedItem(null);
+  };
+
+  const handleSave = async (item: PortfolioItem) => {
+    try {
+      if (isCreating) {
+        await createItem(item);
+        toast.success('Item criado com sucesso!');
+      } else {
+        await updateItem(item.id, item);
+        toast.success('Item atualizado com sucesso!');
+      }
+      handleEditorClose();
+    } catch (error) {
+      toast.error('Erro ao salvar item');
+    }
   };
 
   if (loading) {
@@ -277,16 +309,15 @@ const Portfolio: React.FC = () => {
         </Card>
       )}
 
-      {/* Editor Dialog */}
-      <PortfolioItemEditor
+      {/* Dialogs */}
+      <PortfolioItemEditorDialog
         isOpen={isEditorOpen}
         onClose={handleEditorClose}
         item={selectedItem}
         isCreating={isCreating}
       />
 
-      {/* Viewer Dialog */}
-      <PortfolioItemViewer
+      <PortfolioItemViewerDialog
         isOpen={isViewerOpen}
         onClose={handleViewerClose}
         item={selectedItem}
