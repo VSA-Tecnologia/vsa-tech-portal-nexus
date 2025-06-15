@@ -17,6 +17,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
+  updatePassword: (password: string) => Promise<{ error?: string }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
   // Legacy method names for compatibility (removed signUp/register)
   login: (email: string, password: string) => Promise<{ error?: string }>;
@@ -168,6 +169,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updatePassword = async (password: string) => {
+    try {
+      console.log('Updating password for current user');
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (error) {
+        console.error('Password update error:', error);
+        toast.error(error.message || 'Erro ao atualizar senha');
+        return { error: error.message };
+      }
+
+      toast.success('Senha atualizada com sucesso!');
+      return {};
+    } catch (error) {
+      console.error('Unexpected error during password update:', error);
+      toast.error('Erro ao atualizar senha');
+      return { error: 'Erro ao atualizar senha' };
+    }
+  };
+
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) {
       return { error: 'Usuário não autenticado' };
@@ -210,6 +233,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
     updateProfile,
     // Legacy method names for compatibility (removed signUp/register)
     login: signIn,
