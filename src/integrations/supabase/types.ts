@@ -42,6 +42,75 @@ export type Database = {
         }
         Relationships: []
       }
+      dpias: {
+        Row: {
+          completion_percentage: number
+          created_at: string | null
+          id: string
+          name: string
+          responsible: string
+          sector: string
+          status: Database["public"]["Enums"]["dpia_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          completion_percentage?: number
+          created_at?: string | null
+          id?: string
+          name: string
+          responsible: string
+          sector: string
+          status?: Database["public"]["Enums"]["dpia_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          completion_percentage?: number
+          created_at?: string | null
+          id?: string
+          name?: string
+          responsible?: string
+          sector?: string
+          status?: Database["public"]["Enums"]["dpia_status"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      milestones: {
+        Row: {
+          completed: boolean
+          created_at: string | null
+          description: string
+          due_date: string
+          id: string
+          module: Database["public"]["Enums"]["task_module"]
+          progress: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string | null
+          description: string
+          due_date: string
+          id?: string
+          module: Database["public"]["Enums"]["task_module"]
+          progress?: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string | null
+          description?: string
+          due_date?: string
+          id?: string
+          module?: Database["public"]["Enums"]["task_module"]
+          progress?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       page_categories: {
         Row: {
           created_at: string
@@ -277,6 +346,47 @@ export type Database = {
         }
         Relationships: []
       }
+      risks: {
+        Row: {
+          created_at: string | null
+          dpia_id: string
+          id: string
+          impact: Database["public"]["Enums"]["risk_impact"]
+          name: string
+          probability: Database["public"]["Enums"]["risk_impact"]
+          type: Database["public"]["Enums"]["risk_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dpia_id: string
+          id?: string
+          impact: Database["public"]["Enums"]["risk_impact"]
+          name: string
+          probability: Database["public"]["Enums"]["risk_impact"]
+          type: Database["public"]["Enums"]["risk_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dpia_id?: string
+          id?: string
+          impact?: Database["public"]["Enums"]["risk_impact"]
+          name?: string
+          probability?: Database["public"]["Enums"]["risk_impact"]
+          type?: Database["public"]["Enums"]["risk_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risks_dpia_id_fkey"
+            columns: ["dpia_id"]
+            isOneToOne: false
+            referencedRelation: "dpias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_categories: {
         Row: {
           created_at: string
@@ -411,6 +521,107 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          assignees: string[] | null
+          created_at: string | null
+          dependencies: string[] | null
+          description: string
+          documents: string[] | null
+          end_date: string
+          id: string
+          milestone_id: string | null
+          module: Database["public"]["Enums"]["task_module"]
+          priority: Database["public"]["Enums"]["task_priority"]
+          progress: number
+          responsible: string
+          start_date: string
+          status: Database["public"]["Enums"]["task_status"]
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignees?: string[] | null
+          created_at?: string | null
+          dependencies?: string[] | null
+          description: string
+          documents?: string[] | null
+          end_date: string
+          id?: string
+          milestone_id?: string | null
+          module: Database["public"]["Enums"]["task_module"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          progress?: number
+          responsible: string
+          start_date: string
+          status?: Database["public"]["Enums"]["task_status"]
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignees?: string[] | null
+          created_at?: string | null
+          dependencies?: string[] | null
+          description?: string
+          documents?: string[] | null
+          end_date?: string
+          id?: string
+          milestone_id?: string | null
+          module?: Database["public"]["Enums"]["task_module"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          progress?: number
+          responsible?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_tasks_milestone"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          role: string
+          status: Database["public"]["Enums"]["team_member_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          role: string
+          status?: Database["public"]["Enums"]["team_member_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          role?: string
+          status?: Database["public"]["Enums"]["team_member_status"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -434,7 +645,10 @@ export type Database = {
       }
     }
     Enums: {
+      dpia_status: "draft" | "review" | "approved" | "expired"
       plan_status: "draft" | "published"
+      risk_impact: "low" | "medium" | "high" | "critical"
+      risk_type: "access" | "modification" | "disappearance"
       service_complexity: "basic" | "intermediate" | "advanced"
       service_status: "draft" | "published"
       service_type:
@@ -445,6 +659,18 @@ export type Database = {
         | "hard-drive"
         | "archive"
         | "signal"
+      task_module:
+        | "governance"
+        | "documents"
+        | "dpia"
+        | "training"
+        | "third_parties"
+        | "reports"
+        | "consents"
+        | "general"
+      task_priority: "high" | "medium" | "low"
+      task_status: "planned" | "in_progress" | "completed" | "delayed"
+      team_member_status: "active" | "inactive"
       user_role: "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
@@ -561,7 +787,10 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      dpia_status: ["draft", "review", "approved", "expired"],
       plan_status: ["draft", "published"],
+      risk_impact: ["low", "medium", "high", "critical"],
+      risk_type: ["access", "modification", "disappearance"],
       service_complexity: ["basic", "intermediate", "advanced"],
       service_status: ["draft", "published"],
       service_type: [
@@ -573,6 +802,19 @@ export const Constants = {
         "archive",
         "signal",
       ],
+      task_module: [
+        "governance",
+        "documents",
+        "dpia",
+        "training",
+        "third_parties",
+        "reports",
+        "consents",
+        "general",
+      ],
+      task_priority: ["high", "medium", "low"],
+      task_status: ["planned", "in_progress", "completed", "delayed"],
+      team_member_status: ["active", "inactive"],
       user_role: ["admin", "editor", "viewer"],
     },
   },

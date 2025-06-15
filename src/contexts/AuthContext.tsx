@@ -15,13 +15,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
-  // Legacy method names for compatibility
+  // Legacy method names for compatibility (removed signUp/register)
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<{ error?: string }>;
 }
@@ -132,46 +130,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
-    try {
-      console.log('Attempting sign up for:', email);
-      setLoading(true);
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-          },
-          emailRedirectTo: `${window.location.origin}/admin`
-        },
-      });
-
-      if (error) {
-        console.error('Sign up error:', error);
-        toast.error(error.message || 'Erro no cadastro');
-        return { error: error.message };
-      }
-
-      console.log('Sign up successful:', data.user?.email);
-      
-      if (data.user && !data.session) {
-        toast.success('Cadastro realizado! Verifique seu email para confirmar a conta.');
-      } else {
-        toast.success('Cadastro realizado com sucesso!');
-      }
-      
-      return {};
-    } catch (error) {
-      console.error('Unexpected error during sign up:', error);
-      toast.error('Erro inesperado no cadastro');
-      return { error: 'Erro inesperado no cadastro' };
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const signOut = async () => {
     try {
       console.log('Signing out user');
@@ -250,13 +208,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: !!user,
     isLoading: loading,
     signIn,
-    signUp,
     signOut,
     resetPassword,
     updateProfile,
-    // Legacy method names for compatibility
+    // Legacy method names for compatibility (removed signUp/register)
     login: signIn,
-    register: signUp,
     logout: signOut,
     forgotPassword: resetPassword,
   };

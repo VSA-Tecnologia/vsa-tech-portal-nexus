@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 const loginSchema = z.object({
@@ -141,24 +141,11 @@ const Login: React.FC = () => {
               </form>
             </Form>
           </CardContent>
-          <CardFooter className="justify-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Para fins de teste use: <br />
-              Email: admin@vsa.com <br />
-              Senha: admin123
-            </p>
-          </CardFooter>
         </Card>
         
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Novo usuário?{' '}
-            <Link
-              to="/admin/register"
-              className="text-vsa-teal hover:underline"
-            >
-              Solicite acesso
-            </Link>
+            Acesso restrito apenas para usuários autorizados
           </p>
         </div>
       </div>

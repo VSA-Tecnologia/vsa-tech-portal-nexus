@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Search, Filter, UserPlus } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -24,10 +23,6 @@ export const UsersToolbar: React.FC<UsersToolbarProps> = ({
             Gerencie o acesso de usuários ao painel administrativo.
           </p>
         </div>
-        <Button className="bg-vsa-teal hover:bg-vsa-teal-dark">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Novo Usuário
-        </Button>
       </div>
       
       <div className="flex items-center gap-4 mb-6">
