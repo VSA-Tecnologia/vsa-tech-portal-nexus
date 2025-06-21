@@ -1,4 +1,5 @@
 
+-- depends_on: 20250613000000-initial_schema.sql
 -- Inserir categorias de serviços padrão se não existirem
 INSERT INTO service_categories (name, description, slug, order_position, enabled) 
 VALUES 
@@ -51,3 +52,4 @@ SELECT
   ARRAY['Análise de sistemas', 'Auditoria', 'Documentação'],
   'intermediate', 'published', false, 3
 WHERE NOT EXISTS (SELECT 1 FROM services WHERE slug = 'consultoria-tecnologia');
+-- depends_on: 20250613000000-initial_schema.sql
