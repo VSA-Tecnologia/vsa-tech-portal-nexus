@@ -50,6 +50,14 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Formatting
+
+This project uses **Prettier** with ESLint for code formatting. After installing dependencies you can format all files by running:
+
+```sh
+npm run format
+```
+
 ## What technologies are used for this project?
 
 This project is built with:
