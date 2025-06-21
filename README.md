@@ -71,3 +71,43 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Environment variables
+
+Copy `.env.example` to `.env` and provide the values for your Supabase project:
+
+```sh
+cp .env.example .env
+```
+
+The variables are:
+
+- `VITE_SUPABASE_URL` – URL of your Supabase project
+- `VITE_SUPABASE_ANON_KEY` – public anon key
+
+## Supabase setup
+
+Install the [Supabase CLI](https://supabase.com/docs/guides/cli) and either run a local stack or connect to the hosted instance.
+
+### Local database
+
+```sh
+supabase start
+```
+
+### Connect to the hosted project
+
+```sh
+supabase link --project-ref yeoddtpsfmufpvfmnski
+```
+
+After linking you can run migrations with `supabase db push`.
+
+## Running the app
+
+Install dependencies and start the development server:
+
+```sh
+npm install
+npm run dev
+```
