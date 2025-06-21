@@ -36,6 +36,11 @@ npm i
 npm run dev
 ```
 
+### Environment variables
+
+1. Copy `.env.example` to `.env`.
+2. Fill `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` with your Supabase credentials.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
