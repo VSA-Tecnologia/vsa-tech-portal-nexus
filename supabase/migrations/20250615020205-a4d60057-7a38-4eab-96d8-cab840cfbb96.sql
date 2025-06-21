@@ -1,4 +1,5 @@
 
+-- depends_on: 20250613000000-initial_schema.sql
 -- Criar usuário administrativo diretamente no banco
 -- Note: Este é um approach alternativo para criar um usuário admin inicial
 -- O usuário precisará fazer login normalmente, mas já terá perfil admin configurado
@@ -38,3 +39,4 @@ $$;
 
 -- Garantir que o usuário específico seja admin
 SELECT public.promote_user_to_admin('vinicius.andrade@vsatecnologia.com.br');
+-- depends_on: 20250613000000-initial_schema.sql
