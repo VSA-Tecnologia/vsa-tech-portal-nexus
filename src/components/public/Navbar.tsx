@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link as ScrollLink } from 'react-scroll';
 import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const navLinks = [
     { name: 'Início', to: 'hero' },
@@ -32,11 +18,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header 
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/95 dark:bg-vsa-blue-dark/95 shadow-md backdrop-blur-sm' 
-          : 'bg-transparent'
-      }`}
+      className="fixed top-0 w-full z-50 bg-white dark:bg-vsa-blue-dark shadow-md"
     >
       <nav className="container mx-auto flex items-center justify-between py-6">
         <Link to="/" className="flex items-center">
@@ -57,9 +39,7 @@ const Navbar: React.FC = () => {
               smooth={true}
               offset={-80}
               duration={500}
-              className={`cursor-pointer text-lg font-medium hover:text-vsa-teal transition-colors ${
-                scrolled ? 'text-vsa-blue dark:text-white' : 'text-vsa-blue dark:text-white'
-              }`}
+              className="cursor-pointer text-lg font-medium hover:text-vsa-teal transition-colors text-vsa-blue dark:text-white"
             >
               {link.name}
             </ScrollLink>
