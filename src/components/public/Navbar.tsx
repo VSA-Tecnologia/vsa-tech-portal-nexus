@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
           <img 
             src="/lovable-uploads/63a9548e-8cf5-4a44-97b9-90dda37e911f.png" 
             alt="VSA Tech Logo" 
-            className="h-14 w-auto mr-3" 
+            className="h-16 w-auto mr-3" 
           />
         </Link>
 
