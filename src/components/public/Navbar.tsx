@@ -64,13 +64,6 @@ const Navbar: React.FC = () => {
               {link.name}
             </ScrollLink>
           ))}
-          
-          <Link 
-            to="/admin/login"
-            className="btn-primary text-lg"
-          >
-            Área do Cliente
-          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -105,13 +98,6 @@ const Navbar: React.FC = () => {
                 {link.name}
               </ScrollLink>
             ))}
-            <Link 
-              to="/admin/login"
-              className="btn-primary text-lg text-center"
-              onClick={() => setIsOpen(false)}
-            >
-              Área do Cliente
-            </Link>
           </div>
         </div>
       )}
